@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://REMPLACE-PAR-TON-URL.com/sitemap.xml
+Sitemap: https://tokiniaina5.github.io/git-github.com-tokiniaina5-sol/sitemap.xml
