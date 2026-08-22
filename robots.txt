@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://REMPLACE-PAR-TON-URL.com/sitemap.xml
