@@ -294,6 +294,13 @@ document.addEventListener('DOMContentLoaded', applySiteContent);
 
 // ── 7) COMMANDES ──
 async function renderAdminOrders(){
+  // Fandroahana fanampiny (raha misy olana amin'ny pg_cron): fafao
+  // ny commande mihoatra 2 andro isaky ny idiranao ity tab ity.
+  try{
+    const twoDaysAgo = new Date(Date.now() - 2*24*60*60*1000).toISOString();
+    await supabaseClient.from('orders').delete().lt('created_at', twoDaysAgo);
+  }catch(e){ console.warn('Fandroahana commande taloha: olana', e); }
+
   const el = document.getElementById('adminOrdersList');
   el.innerHTML = '<p style="color:var(--g600)">Eo am-pakàna...</p>';
   const { data: orders, error } = await supabaseClient
@@ -320,6 +327,13 @@ async function renderAdminOrders(){
 
 // ── 8) VISITEURS ──
 async function renderAdminVisits(){
+  // Fandroahana fanampiny (raha misy olana amin'ny pg_cron): fafao
+  // ny fitsidihana mihoatra 2 andro isaky ny idiranao ity tab ity.
+  try{
+    const twoDaysAgo = new Date(Date.now() - 2*24*60*60*1000).toISOString();
+    await supabaseClient.from('site_visits').delete().lt('created_at', twoDaysAgo);
+  }catch(e){ console.warn('Fandroahana visites taloha: olana', e); }
+
   const statsEl = document.getElementById('adminVisitStats');
   const listEl = document.getElementById('adminVisitList');
   statsEl.innerHTML = '<p style="color:var(--g600)">Eo am-pakàna...</p>';
