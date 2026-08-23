@@ -309,11 +309,12 @@ function renderProducts(){
   const grid = document.getElementById('productGrid');
   if(!filtered.length){
     grid.innerHTML = searchQuery
-      ? `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--g400)">Tsy misy entana mifanaraka amin'ny "${searchQuery}".</div>`
-      : '<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--g400)">Aucun produit dans cette catégorie.</div>';
+      ? `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--g400)">${t('toast_search_none')} "${searchQuery}".</div>`
+      : `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--g400)">${currentLang==='en'?'No products in this category.':'Aucun produit dans cette catégorie.'}</div>`;
     return;
   }
-  grid.innerHTML = filtered.map(p=>{
+  grid.innerHTML = filtered.map(rawP=>{
+    const p = localizeProduct(rawP);
     const slides3 = p.cat==='KITS' ? p.imgs : p.imgs.slice(0,3);
     const slidesHtml = slides3.map((u,i)=>`
       <div class="card-slide${i===0?' active':''}">
@@ -322,9 +323,9 @@ function renderProducts(){
     const dotsHtml = slides3.length>1 ? `<div class="card-slide-dots">${slides3.map((_,i)=>`<div class="card-slide-dot${i===0?' active':''}"></div>`).join('')}</div>` : '';
     return `
     <div class="product-card" onclick="openModal(${p.id})" data-id="${p.id}">
-      ${p.badge==='new'?'<span class="card-badge badge-new">Nouveau</span>':''}
+      ${p.badge==='new'?`<span class="card-badge badge-new">${currentLang==='en'?'New':'Nouveau'}</span>`:''}
       ${p.badge==='sale'?`<span class="card-badge badge-sale">-${Math.round((1-p.price/p.old)*100)}%</span>`:''}
-      ${p.badge==='hot'?'<span class="card-badge badge-hot">🔥 Best-seller</span>':''}
+      ${p.badge==='hot'?`<span class="card-badge badge-hot">🔥 ${currentLang==='en'?'Best-seller':'Best-seller'}</span>`:''}
       <div class="card-img">
         ${slidesHtml}
         ${dotsHtml}
@@ -370,7 +371,9 @@ function startCardSlideshows(){
 
 // ── MODAL ──
 function openModal(id){
-  currentProduct = products.find(p=>p.id===id);
+  const rawProduct = products.find(p=>p.id===id);
+  currentProduct = localizeProduct(rawProduct);
+  currentProduct._rawId = id;
   modalQty = 1;
   document.getElementById('qtyVal').textContent = 1;
   document.getElementById('mName').textContent = currentProduct.name;
@@ -441,7 +444,7 @@ function closeModal(){
 }
 function handleModalOverlay(e){ if(e.target===document.getElementById('modalOverlay')) closeModal(); }
 function changeQty(d){ modalQty=Math.max(1,modalQty+d); document.getElementById('qtyVal').textContent=modalQty; }
-function addFromModal(){ addToCart(currentProduct,modalQty); toast(`${modalQty}× ${currentProduct.name} ajouté !`); closeModal(); }
+function addFromModal(){ addToCart(currentProduct,modalQty); toast(`${modalQty}× ${currentProduct.name} ${t('toast_added_cart')}`); closeModal(); }
 // ── FAVORIS ──
 let favoris = [];
 
@@ -449,12 +452,12 @@ function addToWishlist(){
   if(!currentProduct) return;
   const exists = favoris.find(p=>p.id===currentProduct.id);
   if(exists){
-    toast(`💜 "${currentProduct.name}" déjà dans vos favoris !`);
+    toast(`💜 "${currentProduct.name}" ${currentLang==='en'?'already in your wishlist!':'déjà dans vos favoris !'}`);
     return;
   }
   favoris.push(currentProduct);
   renderFavoris();
-  toast(`♡ ${currentProduct.name} ajouté aux favoris !`);
+  toast(`♡ ${currentProduct.name} ${t('toast_added_fav')}`);
 }
 
 function removeFromFav(id){
@@ -464,19 +467,19 @@ function removeFromFav(id){
 
 function addFavToCart(id){
   const p = favoris.find(f=>f.id===id);
-  if(p){ addToCart(p,1); toast(`🛒 ${p.name} ajouté au panier !`); }
+  if(p){ addToCart(p,1); toast(`🛒 ${p.name} ${t('toast_added_cart')}`); }
 }
 
 function addAllToCart(){
   favoris.forEach(p=>addToCart(p,1));
-  toast(`🛒 ${favoris.length} produit(s) ajouté(s) au panier !`);
+  toast(t('toast_all_added'));
   toggleFav();
 }
 
 function clearFavoris(){
   favoris=[];
   renderFavoris();
-  toast('🗑 Favoris vidés.');
+  toast(t('toast_fav_cleared'));
 }
 
 function renderFavoris(){
@@ -484,11 +487,11 @@ function renderFavoris(){
   const badge=document.getElementById('favCount');
   badge.textContent=count;
   badge.style.display=count>0?'flex':'none';
-  document.getElementById('favSub').textContent=`${count} article${count!==1?'s':''}`;
+  document.getElementById('favSub').textContent=`${count} ${count!==1?t('cart_n_items'):t('cart_1_item')}`;
   const body=document.getElementById('favBody');
   const foot=document.getElementById('favFoot');
   if(!count){
-    body.innerHTML='<div class="fav-empty"><div style="font-size:3rem;margin-bottom:1rem">♡</div><div style="font-weight:700;color:var(--g800);margin-bottom:.4rem">Aucun favori</div><div style="font-size:.83rem;color:var(--g400)">Cliquez sur ♡ pour ajouter un produit</div></div>';
+    body.innerHTML=`<div class="fav-empty"><div style="font-size:3rem;margin-bottom:1rem">♡</div><div style="font-weight:700;color:var(--g800);margin-bottom:.4rem">${t('fav_empty_title')}</div><div style="font-size:.83rem;color:var(--g400)">${t('fav_empty_sub')}</div></div>`;
     foot.style.display='none';
     return;
   }
@@ -501,8 +504,8 @@ function renderFavoris(){
         <div class="fav-item-price">${fmtAr(p.price)}${p.old?` <span style="font-size:.72rem;color:var(--g400);text-decoration:line-through;font-weight:400">${fmtAr(p.old)}</span>`:''}</div>
       </div>
       <div class="fav-item-actions">
-        <button class="fav-to-cart" onclick="addFavToCart(${p.id})">🛒 Panier</button>
-        <button class="fav-remove" onclick="removeFromFav(${p.id})">✕ Retirer</button>
+        <button class="fav-to-cart" onclick="addFavToCart(${p.id})">🛒 ${t('nav_cart')}</button>
+        <button class="fav-remove" onclick="removeFromFav(${p.id})">✕ ${currentLang==='en'?'Remove':'Retirer'}</button>
       </div>
     </div>`).join('');
 }
@@ -524,7 +527,7 @@ function sendContactForm(){
   const email=document.getElementById('ctEmail').value.trim();
   const subject=document.getElementById('ctSubject').value;
   const message=document.getElementById('ctMessage').value.trim();
-  if(!name||!tel||!email||!message){ toast('⚠️ Veuillez remplir tous les champs !'); return; }
+  if(!name||!tel||!email||!message){ toast(t('toast_fill_contact')); return; }
 
   const mailSubject = `[Soltex] ${subject} - ${name}`;
   const mailBody =
@@ -546,7 +549,7 @@ ${message}`;
     name, tel, email, subject, message
   }).then(({error})=>{ if(error) console.warn('contact_messages insert error:', error); });
 
-  toast(`✅ Ouverture de votre messagerie...`);
+  toast(t('toast_msg_sending'));
   document.getElementById('ctName').value='';
   document.getElementById('ctTel').value='';
   document.getElementById('ctEmail').value='';
@@ -570,14 +573,14 @@ function renderCart(){
   const total=cartItems.reduce((s,i)=>s+i.product.price*i.qty,0);
   const count=cartItems.reduce((s,i)=>s+i.qty,0);
   document.getElementById('cartCount').textContent=count;
-  document.getElementById('cartSub').textContent=`${count} article${count!==1?'s':''}`;
+  document.getElementById('cartSub').textContent=`${count} ${count!==1?t('cart_n_items'):t('cart_1_item')}`;
   const body=document.getElementById('cartBody');
   const foot=document.getElementById('cartFoot');
   if(!cartItems.length){
     body.innerHTML='';
     const emp=document.getElementById('cartEmpty')||document.createElement('div');
     emp.id='cartEmpty'; emp.className='cart-empty-state';
-    emp.innerHTML='<div style="font-size:3rem;margin-bottom:1rem">🛒</div><div style="font-weight:700;color:var(--g800);margin-bottom:.4rem">Panier vide</div><div style="font-size:.83rem;color:var(--g400)">Ajoutez des produits pour commencer</div>';
+    emp.innerHTML=`<div style="font-size:3rem;margin-bottom:1rem">🛒</div><div style="font-weight:700;color:var(--g800);margin-bottom:.4rem">${t('cart_empty_title')}</div><div style="font-size:.83rem;color:var(--g400)">${t('cart_empty_sub')}</div>`;
     body.appendChild(emp);
     foot.style.display='none'; return;
   }
@@ -598,7 +601,7 @@ function renderCart(){
     </div>`).join('');
   const ship=total>=860000?0:64500;
   document.getElementById('cartSubtotal').textContent=`${fmtAr(total)}`;
-  document.getElementById('cartShip').textContent=total>=860000?'🎉 Gratuite':`${fmtAr(ship)}`;
+  document.getElementById('cartShip').textContent=total>=860000?('🎉 '+t('invoice_free')):`${fmtAr(ship)}`;
   document.getElementById('cartTotal').textContent=`${fmtAr(total+ship)}`;
 }
 function toggleCart(){
@@ -610,7 +613,7 @@ function handleCartOverlay(e){ if(e.target===document.getElementById('cartOverla
 
 // ── CHECKOUT ──
 function openCheckout(){
-  if(!cartItems.length){ toast('⚠️ Panier vide !'); return; }
+  if(!cartItems.length){ toast(currentLang==='en'?'⚠️ Empty cart!':'⚠️ Panier vide !'); return; }
   toggleCart();
   setTimeout(()=>{ currentStep=1; renderStep(1); document.getElementById('coOverlay').classList.add('open'); document.body.style.overflow='hidden'; },350);
 }
@@ -618,12 +621,12 @@ function closeCheckout(){ document.getElementById('coOverlay').classList.remove(
 function goStep(n){
   if(n===2){
     const v=['fPrenom','fNom','fTel','fAdresse','fVille'].map(id=>document.getElementById(id).value.trim());
-    if(v.some(x=>!x)){ toast('⚠️ Veuillez remplir tous les champs !'); return; }
+    if(v.some(x=>!x)){ toast(t('toast_fill_fields')); return; }
     const total=cartItems.reduce((s,i)=>s+i.product.price*i.qty,0);
     const ship=total>=860000?0:64500;
     document.getElementById('coSumItems').innerHTML=
       cartItems.map(i=>`<div class="co-sum-item"><span>${i.product.icon} ${i.product.name} ×${i.qty}</span><span>${fmtAr(i.product.price*i.qty)}</span></div>`).join('')+
-      `<div class="co-sum-item"><span>🚚 Livraison</span><span>${ship===0?'🎉 Gratuite':fmtAr(ship)}</span></div>`;
+      `<div class="co-sum-item"><span>🚚 ${t('cart_shipping')}</span><span>${ship===0?('🎉 '+t('invoice_free')):fmtAr(ship)}</span></div>`;
     document.getElementById('coSumTotal').textContent=`${fmtAr(total+ship)}`;
     selPay(selectedPay);
   }
@@ -647,11 +650,20 @@ function selPay(m){
   const borders={mvola:'#BFDBFE',orange:'#FED7AA',airtel:'#FECACA',cash:'#BBF7D0'};
   let html='';
   if(m==='cash'){
-    html=`<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:.8rem 1rem;font-size:.83rem;color:#166534">💵 <strong>Paiement à la livraison</strong> — Préparez le montant exact. Notre livreur passera sous 24–48h.</div>`;
+    html=currentLang==='en'
+      ? `<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:.8rem 1rem;font-size:.83rem;color:#166534">💵 <strong>Cash on delivery</strong> — Please prepare the exact amount. Our delivery person will arrive within 24–48h.</div>`
+      : `<div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:.8rem 1rem;font-size:.83rem;color:#166534">💵 <strong>Paiement à la livraison</strong> — Préparez le montant exact. Notre livreur passera sous 24–48h.</div>`;
   } else {
     const labels={mvola:'MVola (Telma)',orange:'Orange Money',airtel:'Airtel Money'};
     const ph={mvola:'034 XX XXX XX',orange:'032 XX XXX XX',airtel:'033 XX XXX XX'};
-    html=`<div style="background:${colors[m]};border:1px solid ${borders[m]};border-radius:10px;padding:.8rem 1rem;font-size:.83rem;color:var(--g700);margin-bottom:.6rem">
+    html=currentLang==='en'
+      ? `<div style="background:${colors[m]};border:1px solid ${borders[m]};border-radius:10px;padding:.8rem 1rem;font-size:.83rem;color:var(--g700);margin-bottom:.6rem">
+      📱 <strong>${labels[m]}</strong> — Enter your number to receive the payment request.</div>
+      <div class="form-group">
+        <label class="form-label">Your ${labels[m]} number</label>
+        <input class="form-input" id="fPayNum" placeholder="${ph[m]}" style="border-color:${borders[m]}"/>
+      </div>`
+      : `<div style="background:${colors[m]};border:1px solid ${borders[m]};border-radius:10px;padding:.8rem 1rem;font-size:.83rem;color:var(--g700);margin-bottom:.6rem">
       📱 <strong>${labels[m]}</strong> — Saisissez votre numéro pour recevoir la demande de paiement.</div>
       <div class="form-group">
         <label class="form-label">Votre numéro ${labels[m]}</label>
@@ -663,7 +675,7 @@ function selPay(m){
 function confirmOrder(){
   if(selectedPay!=='cash'){
     const n=document.getElementById('fPayNum');
-    if(!n||!n.value.trim()){ toast('⚠️ Entrez votre numéro de paiement !'); return; }
+    if(!n||!n.value.trim()){ toast(currentLang==='en'?'⚠️ Please enter your payment number!':'⚠️ Entrez votre numéro de paiement !'); return; }
   }
   const ref='#SM-'+Math.floor(100000+Math.random()*900000);
   document.getElementById('coRef').textContent=ref;
@@ -676,6 +688,8 @@ function confirmOrder(){
   const ville=document.getElementById('fVille').value;
   const cp=document.getElementById('fCp').value;
   const payNames={mvola:'MVola (Telma)',orange:'Orange Money',airtel:'Airtel Money',cash:'Espèces à la livraison'};
+
+  const payNamesDisplay=currentLang==='en'?{mvola:'MVola (Telma)',orange:'Orange Money',airtel:'Airtel Money',cash:'Cash on delivery'}:payNames;
   const payNum=selectedPay!=='cash'?document.getElementById('fPayNum')?.value:'N/A';
   const total=cartItems.reduce((s,i)=>s+i.product.price*i.qty,0);
   const ship=total>=860000?0:64500;
@@ -684,13 +698,13 @@ function confirmOrder(){
 
   // affichage confirmation
   document.getElementById('coConfLiv').innerHTML=`<strong>${prenom} ${nom}</strong><br>📞 ${tel}<br>📍 ${adresse}, ${ville} ${cp}`;
-  document.getElementById('coConfPay').innerHTML=`<strong>${payNames[selectedPay]}</strong>${payNum&&payNum!=='N/A'?`<br>📱 ${payNum}`:''}`;
+  document.getElementById('coConfPay').innerHTML=`<strong>${payNamesDisplay[selectedPay]}</strong>${payNum&&payNum!=='N/A'?`<br>📱 ${payNum}`:''}`;
   document.getElementById('coConfItems').innerHTML=cartItems.map(i=>`
     <div style="display:flex;justify-content:space-between;padding:.2rem 0;border-bottom:1px solid var(--g200)">
       <span>${i.product.icon} ${i.product.name} ×${i.qty}</span>
       <span style="font-weight:700">${fmtAr(i.product.price*i.qty)}</span>
-    </div>`).join('')+`<div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--g400);padding:.2rem 0"><span>🚚 Livraison</span><span>${ship===0?'Gratuite':fmtAr(ship)}</span></div>`;
-  document.getElementById('coConfTotal').innerHTML=`<div style="display:flex;justify-content:space-between">Total payé <span>${fmtAr(grand)}</span></div>`;
+    </div>`).join('')+`<div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--g400);padding:.2rem 0"><span>🚚 ${t('cart_shipping')}</span><span>${ship===0?t('invoice_free'):fmtAr(ship)}</span></div>`;
+  document.getElementById('coConfTotal').innerHTML=`<div style="display:flex;justify-content:space-between">${t('invoice_total_paid')} <span>${fmtAr(grand)}</span></div>`;
 
   // ── ENVOI EMAIL (mailto) ──
   const mailSubject = `Nouvelle commande ${ref} - Soltex`;
@@ -736,9 +750,9 @@ TOTAL : ${fmtAr(grand)}`;
 // (solosaina/finday), na "Enregistrer en PDF" raha tsy misy
 // imprimante mifandray.
 function generateInvoice(){
-  if(!lastOrderData){ toast('⚠️ Tsy misy commande hozahana facture'); return; }
+  if(!lastOrderData){ toast(t('toast_no_order')); return; }
   const o = lastOrderData;
-  const dateStr = new Date().toLocaleString('fr-FR');
+  const dateStr = new Date().toLocaleString(currentLang==='en'?'en-US':'fr-FR');
   const rows = o.items.map(i=>`
     <tr>
       <td>${i.product.icon||''} ${i.product.name}</td>
@@ -747,8 +761,8 @@ function generateInvoice(){
       <td style="text-align:right">${fmtAr(i.product.price*i.qty)}</td>
     </tr>`).join('');
 
-  const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"/>
-  <title>Facture ${o.ref} — Soltex</title>
+  const html = `<!DOCTYPE html><html lang="${currentLang}"><head><meta charset="UTF-8"/>
+  <title>${t('invoice_title')} ${o.ref} — Soltex</title>
   <style>
     *{box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
     body{margin:0;padding:2.5rem;color:#1E293B}
@@ -771,32 +785,32 @@ function generateInvoice(){
   </style></head><body>
     <div class="inv-head">
       <div class="inv-logo">Sol<span>tex</span></div>
-      <div class="inv-meta"><b>FACTURE</b><br/>${o.ref}<br/>${dateStr}</div>
+      <div class="inv-meta"><b>${t('invoice_title')}</b><br/>${o.ref}<br/>${dateStr}</div>
     </div>
     <div class="inv-cols">
       <div class="inv-box">
-        <h4>Vendeur</h4>
+        <h4>${t('invoice_seller')}</h4>
         Soltex — Énergie Solaire Madagascar<br/>
         rasolofonirainytokiniaina@gmail.com
       </div>
       <div class="inv-box">
-        <h4>Client</h4>
+        <h4>${t('invoice_client')}</h4>
         <b>${o.prenom} ${o.nom}</b><br/>
         📞 ${o.tel}<br/>
         📍 ${o.adresse}, ${o.ville} ${o.cp||''}
       </div>
     </div>
     <table>
-      <thead><tr><th>Article</th><th style="text-align:center">Qté</th><th style="text-align:right">Prix unit.</th><th style="text-align:right">Total</th></tr></thead>
+      <thead><tr><th>${t('invoice_article')}</th><th style="text-align:center">${t('invoice_qty')}</th><th style="text-align:right">${t('invoice_unit_price')}</th><th style="text-align:right">${t('invoice_total')}</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
     <div class="inv-totals">
-      <div><span>Sous-total</span><span>${fmtAr(o.total)}</span></div>
-      <div><span>Livraison</span><span>${o.ship===0?'Gratuite':fmtAr(o.ship)}</span></div>
-      <div><span>Mode de paiement</span><span>${o.payLabel}</span></div>
-      <div class="grand"><span>Total payé</span><span>${fmtAr(o.grand)}</span></div>
+      <div><span>${t('invoice_subtotal')}</span><span>${fmtAr(o.total)}</span></div>
+      <div><span>${t('invoice_shipping')}</span><span>${o.ship===0?t('invoice_free'):fmtAr(o.ship)}</span></div>
+      <div><span>${t('invoice_payment_method')}</span><span>${o.payLabel}</span></div>
+      <div class="grand"><span>${t('invoice_total_paid')}</span><span>${fmtAr(o.grand)}</span></div>
     </div>
-    <div class="inv-foot">Misaotra tamin'ny fividiananao tao amin'ny Soltex ! — Facture générée le ${dateStr}</div>
+    <div class="inv-foot">${t('invoice_thanks')} — ${dateStr}</div>
   </body></html>`;
 
   const w = window.open('', '_blank');
@@ -940,8 +954,1404 @@ async function trackSiteVisit(){
   }
 }
 
+const PRODUCTS_EN = {
+  "1": {
+    "name": "Monocrystalline Panel 200KVA",
+    "desc": "Mid-range monocrystalline panel, perfect for a 2–3 room house.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "200 KVA"
+      },
+      {
+        "k": "Efficiency",
+        "v": "21.0%"
+      },
+      {
+        "k": "Dimensions",
+        "v": "1320×992 mm"
+      },
+      {
+        "k": "Weight",
+        "v": "12 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "5 years"
+      },
+      {
+        "k": "Certification",
+        "v": "IEC 61215"
+      }
+    ],
+    "feats": [
+      "Excellent value for money",
+      "PERC technology",
+      "Resistant to humidity and heat",
+      "MC4 cables included"
+    ]
+  },
+  "12": {
+    "name": "Monocrystalline Panel 300KVA",
+    "desc": "Our best-seller — high-performance panel for home or office.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "300 KVA"
+      },
+      {
+        "k": "Efficiency",
+        "v": "21.5%"
+      },
+      {
+        "k": "Dimensions",
+        "v": "1650×992 mm"
+      },
+      {
+        "k": "Weight",
+        "v": "18.5 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "5 years"
+      },
+      {
+        "k": "Certification",
+        "v": "IEC 61215"
+      }
+    ],
+    "feats": [
+      "Soltex best-seller",
+      "PERC monocrystalline technology",
+      "Resistant to hail and strong winds",
+      "Compatible with all inverters"
+    ]
+  },
+  "14": {
+    "name": "Polycrystalline Panel 150KVA",
+    "desc": "Budget-friendly polycrystalline panel, great performance-to-price ratio.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "150 KVA"
+      },
+      {
+        "k": "Efficiency",
+        "v": "16.5%"
+      },
+      {
+        "k": "Dimensions",
+        "v": "1200×808 mm"
+      },
+      {
+        "k": "Weight",
+        "v": "11 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "3 years"
+      },
+      {
+        "k": "Certification",
+        "v": "IEC 61215"
+      }
+    ],
+    "feats": [
+      "Very affordable price",
+      "Good output in cloudy weather",
+      "Anodized aluminum frame",
+      "Includes installation guide"
+    ]
+  },
+  "15": {
+    "name": "Polycrystalline Panel 250KVA",
+    "desc": "Reliable polycrystalline panel, ideal for mid-range budgets.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "250 KVA"
+      },
+      {
+        "k": "Efficiency",
+        "v": "17.2%"
+      },
+      {
+        "k": "Dimensions",
+        "v": "1640×992 mm"
+      },
+      {
+        "k": "Weight",
+        "v": "16 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "3 years"
+      },
+      {
+        "k": "Certification",
+        "v": "IEC 61215"
+      }
+    ],
+    "feats": [
+      "Proven reliability",
+      "Stable performance in hot conditions",
+      "Reinforced frame",
+      "Compatible with all systems"
+    ]
+  },
+  "16": {
+    "name": "Bifacial Panel 250KVA",
+    "desc": "Compact bifacial panel, captures light from both sides.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "250 KVA (face)"
+      },
+      {
+        "k": "Bifacial gain",
+        "v": "+15–20%"
+      },
+      {
+        "k": "Efficiency",
+        "v": "21.5%"
+      },
+      {
+        "k": "Dimensions",
+        "v": "1480×992 mm"
+      },
+      {
+        "k": "Weight",
+        "v": "17 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "10 years"
+      }
+    ],
+    "feats": [
+      "Captures light on both sides",
+      "+15–20% output vs standard",
+      "Double-sided tempered glass",
+      "Compact, ideal for medium roofs"
+    ]
+  },
+  "18": {
+    "name": "Bifacial Panel 350KVA",
+    "desc": "Bifacial panel captures light from both sides — up to +25% more output.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "350 KVA (face)"
+      },
+      {
+        "k": "Bifacial gain",
+        "v": "+20–25%"
+      },
+      {
+        "k": "Efficiency",
+        "v": "22.1%"
+      },
+      {
+        "k": "Dimensions",
+        "v": "1724×1134 mm"
+      },
+      {
+        "k": "Weight",
+        "v": "22 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "12 years"
+      }
+    ],
+    "feats": [
+      "Captures light on both sides",
+      "+20–25% output vs standard",
+      "Double-sided tempered glass",
+      "Ideal for light or gravel roofing"
+    ]
+  },
+  "17": {
+    "name": "Flexible Panel 50KVA",
+    "desc": "Small flexible panel, perfect for backpacks or portable equipment.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "50 KVA"
+      },
+      {
+        "k": "Efficiency",
+        "v": "22%"
+      },
+      {
+        "k": "Thickness",
+        "v": "2 mm"
+      },
+      {
+        "k": "Weight",
+        "v": "1 kg"
+      },
+      {
+        "k": "Flexibility",
+        "v": "30° max bend"
+      },
+      {
+        "k": "Certification",
+        "v": "IP67"
+      }
+    ],
+    "feats": [
+      "Ultra-compact 1 kg",
+      "Ideal for hiking and nomadic use",
+      "Monocrystalline cells",
+      "IP67 water-resistant"
+    ]
+  },
+  "19": {
+    "name": "Flexible Panel 100KVA",
+    "desc": "Ultra-light flexible panel, adapts to curved surfaces (boats, RVs).",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "100 KVA"
+      },
+      {
+        "k": "Efficiency",
+        "v": "23%"
+      },
+      {
+        "k": "Thickness",
+        "v": "2.5 mm"
+      },
+      {
+        "k": "Weight",
+        "v": "1.8 kg"
+      },
+      {
+        "k": "Flexibility",
+        "v": "30° max bend"
+      },
+      {
+        "k": "Certification",
+        "v": "IP67"
+      }
+    ],
+    "feats": [
+      "Ultra-light — only 1.8 kg",
+      "Bends up to 30°",
+      "SunPower monocrystalline cells",
+      "Ideal for boats, RVs, tents"
+    ]
+  },
+  "2": {
+    "name": "AGM Battery 100Ah",
+    "desc": "Maintenance-free AGM battery, ideal for off-grid solar systems.",
+    "specs": [
+      {
+        "k": "Capacity",
+        "v": "100 Ah"
+      },
+      {
+        "k": "Voltage",
+        "v": "12 V"
+      },
+      {
+        "k": "Type",
+        "v": "AGM VRLA"
+      },
+      {
+        "k": "Weight",
+        "v": "28 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "2 years"
+      },
+      {
+        "k": "Cert.",
+        "v": "CE / UL"
+      }
+    ],
+    "feats": [
+      "Maintenance-free — spill-proof",
+      "Deep discharge tolerant",
+      "500+ cycle lifespan",
+      "CE and UL certified"
+    ]
+  },
+  "20": {
+    "name": "AGM Battery 200Ah",
+    "desc": "Large-capacity AGM battery for complete residential installations.",
+    "specs": [
+      {
+        "k": "Capacity",
+        "v": "200 Ah"
+      },
+      {
+        "k": "Voltage",
+        "v": "12 V"
+      },
+      {
+        "k": "Type",
+        "v": "AGM VRLA"
+      },
+      {
+        "k": "Weight",
+        "v": "52 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "2 years"
+      },
+      {
+        "k": "Cert.",
+        "v": "CE / UL"
+      }
+    ],
+    "feats": [
+      "Long autonomy",
+      "Maintenance-free — spill-proof",
+      "Ideal for a complete solar kit",
+      "CE and UL certified"
+    ]
+  },
+  "21": {
+    "name": "Gel Battery 100Ah",
+    "desc": "Long-lasting Gel battery, resistant to high heat.",
+    "specs": [
+      {
+        "k": "Capacity",
+        "v": "100 Ah"
+      },
+      {
+        "k": "Voltage",
+        "v": "12 V"
+      },
+      {
+        "k": "Type",
+        "v": "Gel VRLA"
+      },
+      {
+        "k": "Weight",
+        "v": "30 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "3 years"
+      },
+      {
+        "k": "Cert.",
+        "v": "CE / IEC"
+      }
+    ],
+    "feats": [
+      "Excellent heat resistance",
+      "800+ cycle lifespan",
+      "Ideal for tropical climates",
+      "Low self-discharge"
+    ]
+  },
+  "22": {
+    "name": "Gel Battery 150Ah",
+    "desc": "High-capacity Gel battery, perfect for daily intensive use.",
+    "specs": [
+      {
+        "k": "Capacity",
+        "v": "150 Ah"
+      },
+      {
+        "k": "Voltage",
+        "v": "12 V"
+      },
+      {
+        "k": "Type",
+        "v": "Gel VRLA"
+      },
+      {
+        "k": "Weight",
+        "v": "42 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "3 years"
+      },
+      {
+        "k": "Cert.",
+        "v": "CE / IEC"
+      }
+    ],
+    "feats": [
+      "High 150Ah capacity",
+      "Very low self-discharge",
+      "Vibration resistant",
+      "3-year warranty"
+    ]
+  },
+  "23": {
+    "name": "LiFePO4 Lithium Battery 100Ah",
+    "desc": "New-generation Lithium battery, lightweight with a very long lifespan.",
+    "specs": [
+      {
+        "k": "Capacity",
+        "v": "100 Ah"
+      },
+      {
+        "k": "Voltage",
+        "v": "12.8 V"
+      },
+      {
+        "k": "Type",
+        "v": "LiFePO4"
+      },
+      {
+        "k": "Weight",
+        "v": "12 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "8 years"
+      },
+      {
+        "k": "Cycles",
+        "v": "4000+ cycles"
+      }
+    ],
+    "feats": [
+      "Ultra-light — only 12 kg",
+      "4000+ charge cycles",
+      "Integrated BMS (protection)",
+      "Fast-charge compatible"
+    ]
+  },
+  "24": {
+    "name": "LiFePO4 Lithium Battery 200Ah",
+    "desc": "High-capacity Lithium battery, ideal for professional installations.",
+    "specs": [
+      {
+        "k": "Capacity",
+        "v": "200 Ah"
+      },
+      {
+        "k": "Voltage",
+        "v": "12.8 V"
+      },
+      {
+        "k": "Type",
+        "v": "LiFePO4"
+      },
+      {
+        "k": "Weight",
+        "v": "22 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "10 years"
+      },
+      {
+        "k": "Cycles",
+        "v": "6000+ cycles"
+      }
+    ],
+    "feats": [
+      "Professional-grade performance",
+      "6000+ charge cycles",
+      "Smart integrated BMS",
+      "Compatible with parallel mounting"
+    ]
+  },
+  "25": {
+    "name": "Lead-Acid Battery 100Ah",
+    "desc": "Classic lead-acid battery, an economical and proven solution.",
+    "specs": [
+      {
+        "k": "Capacity",
+        "v": "100 Ah"
+      },
+      {
+        "k": "Voltage",
+        "v": "12 V"
+      },
+      {
+        "k": "Type",
+        "v": "Lead-Acid"
+      },
+      {
+        "k": "Weight",
+        "v": "27 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "1 year"
+      },
+      {
+        "k": "Cert.",
+        "v": "CE"
+      }
+    ],
+    "feats": [
+      "Very affordable price",
+      "Proven technology",
+      "Easy to maintain",
+      "Great value for money"
+    ]
+  },
+  "26": {
+    "name": "Lead-Acid Battery 150Ah",
+    "desc": "Large-capacity lead-acid battery for standard household use.",
+    "specs": [
+      {
+        "k": "Capacity",
+        "v": "150 Ah"
+      },
+      {
+        "k": "Voltage",
+        "v": "12 V"
+      },
+      {
+        "k": "Type",
+        "v": "Lead-Acid"
+      },
+      {
+        "k": "Weight",
+        "v": "40 kg"
+      },
+      {
+        "k": "Warranty",
+        "v": "1 year"
+      },
+      {
+        "k": "Cert.",
+        "v": "CE"
+      }
+    ],
+    "feats": [
+      "Economical 150Ah capacity",
+      "Rugged and reliable",
+      "Compatible with all controllers",
+      "Simple maintenance"
+    ]
+  },
+  "3": {
+    "name": "Pure Sine Wave Inverter 1000W",
+    "desc": "1000W pure sine wave inverter, compatible with all sensitive electronics.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "1000 W"
+      },
+      {
+        "k": "Input",
+        "v": "12 V DC"
+      },
+      {
+        "k": "Output",
+        "v": "220 V AC"
+      },
+      {
+        "k": "Efficiency",
+        "v": "93%"
+      },
+      {
+        "k": "Weight",
+        "v": "3.2 kg"
+      },
+      {
+        "k": "Protection",
+        "v": "Surcharge/CC"
+      }
+    ],
+    "feats": [
+      "Pure sine wave output",
+      "Compatible with sensitive electronics",
+      "LCD display",
+      "Quiet thermostatic fan"
+    ]
+  },
+  "27": {
+    "name": "Pure Sine Wave Inverter 2000W",
+    "desc": "High-power pure sine wave inverter to run a fridge, pump, or TV.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "2000 W"
+      },
+      {
+        "k": "Input",
+        "v": "24 V DC"
+      },
+      {
+        "k": "Output",
+        "v": "220 V AC"
+      },
+      {
+        "k": "Efficiency",
+        "v": "94%"
+      },
+      {
+        "k": "Weight",
+        "v": "5.8 kg"
+      },
+      {
+        "k": "Protection",
+        "v": "Multi-protection"
+      }
+    ],
+    "feats": [
+      "High 2000W power",
+      "Ideal for fridge and pump",
+      "Double thermal protection",
+      "Remote control included"
+    ]
+  },
+  "28": {
+    "name": "Modified Sine Wave Inverter 500W",
+    "desc": "Budget-friendly modified sine wave inverter, ideal for lighting and chargers.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "500 W"
+      },
+      {
+        "k": "Input",
+        "v": "12 V DC"
+      },
+      {
+        "k": "Output",
+        "v": "220 V AC"
+      },
+      {
+        "k": "Efficiency",
+        "v": "88%"
+      },
+      {
+        "k": "Weight",
+        "v": "1.5 kg"
+      },
+      {
+        "k": "Protection",
+        "v": "Surcharge/CC"
+      }
+    ],
+    "feats": [
+      "Very affordable price",
+      "Light and compact",
+      "Ideal for lighting and chargers",
+      "Built-in overload protection"
+    ]
+  },
+  "29": {
+    "name": "Modified Sine Wave Inverter 1500W",
+    "desc": "1500W modified sine wave inverter, great value for home use.",
+    "specs": [
+      {
+        "k": "Power",
+        "v": "1500 W"
+      },
+      {
+        "k": "Input",
+        "v": "12 V DC"
+      },
+      {
+        "k": "Output",
+        "v": "220 V AC"
+      },
+      {
+        "k": "Efficiency",
+        "v": "90%"
+      },
+      {
+        "k": "Weight",
+        "v": "3 kg"
+      },
+      {
+        "k": "Protection",
+        "v": "Multi-protection"
+      }
+    ],
+    "feats": [
+      "Mid-range 1500W power",
+      "Great value for money",
+      "Automatic fan",
+      "LED display"
+    ]
+  },
+  "4": {
+    "name": "PWM Charge Controller 20A",
+    "desc": "Budget-friendly PWM controller, ideal for small 12V/24V systems.",
+    "specs": [
+      {
+        "k": "Current",
+        "v": "20 A"
+      },
+      {
+        "k": "PV Voltage",
+        "v": "50 V max"
+      },
+      {
+        "k": "Battery",
+        "v": "12/24 V auto"
+      },
+      {
+        "k": "Efficiency",
+        "v": "85%"
+      },
+      {
+        "k": "Display",
+        "v": "LCD"
+      },
+      {
+        "k": "Warranty",
+        "v": "1 year"
+      }
+    ],
+    "feats": [
+      "Very affordable price",
+      "Simple to install",
+      "Auto 12/24V detection",
+      "Ideal for small installations"
+    ]
+  },
+  "30": {
+    "name": "PWM Charge Controller 40A",
+    "desc": "Rugged 40A PWM controller for standard residential installations.",
+    "specs": [
+      {
+        "k": "Current",
+        "v": "40 A"
+      },
+      {
+        "k": "PV Voltage",
+        "v": "55 V max"
+      },
+      {
+        "k": "Battery",
+        "v": "12/24 V auto"
+      },
+      {
+        "k": "Efficiency",
+        "v": "87%"
+      },
+      {
+        "k": "Display",
+        "v": "LCD"
+      },
+      {
+        "k": "Warranty",
+        "v": "1 year"
+      }
+    ],
+    "feats": [
+      "Rugged and reliable",
+      "Compatible with AGM/Gel batteries",
+      "Short-circuit protection",
+      "Clear LCD display"
+    ]
+  },
+  "31": {
+    "name": "MPPT Charge Controller 30A",
+    "desc": "High-efficiency 30A MPPT controller to maximize solar output.",
+    "specs": [
+      {
+        "k": "Current",
+        "v": "30 A"
+      },
+      {
+        "k": "PV Voltage",
+        "v": "100 V max"
+      },
+      {
+        "k": "Battery",
+        "v": "12/24 V auto"
+      },
+      {
+        "k": "Efficiency",
+        "v": "98%"
+      },
+      {
+        "k": "Display",
+        "v": "LCD"
+      },
+      {
+        "k": "Warranty",
+        "v": "2 years"
+      }
+    ],
+    "feats": [
+      "Advanced MPPT algorithm",
+      "98% efficiency",
+      "Auto 12/24V detection",
+      "Daily history log"
+    ]
+  },
+  "32": {
+    "name": "MPPT Charge Controller 40A",
+    "desc": "Premium 40A MPPT controller, best efficiency on the market.",
+    "specs": [
+      {
+        "k": "Current",
+        "v": "40 A"
+      },
+      {
+        "k": "PV Voltage",
+        "v": "100 V max"
+      },
+      {
+        "k": "Battery",
+        "v": "12/24 V auto"
+      },
+      {
+        "k": "Efficiency",
+        "v": "99%"
+      },
+      {
+        "k": "Display",
+        "v": "LCD"
+      },
+      {
+        "k": "Warranty",
+        "v": "2 years"
+      }
+    ],
+    "feats": [
+      "99% efficiency — best on the market",
+      "Advanced surge protection",
+      "Compatible with Lithium/AGM/Gel",
+      "Optional Bluetooth app"
+    ]
+  },
+  "5": {
+    "name": "Solar Cable 6mm² (10m)",
+    "desc": "Double UV-resistant insulated photovoltaic cable, ideal for panel connections.",
+    "specs": [
+      {
+        "k": "Cross-section",
+        "v": "6 mm²"
+      },
+      {
+        "k": "Length",
+        "v": "10 m"
+      },
+      {
+        "k": "Max voltage",
+        "v": "1500 V DC"
+      },
+      {
+        "k": "Color",
+        "v": "Red/Black"
+      },
+      {
+        "k": "Standard",
+        "v": "EN 50618"
+      },
+      {
+        "k": "Temp.",
+        "v": "-40°C à +90°C"
+      }
+    ],
+    "feats": [
+      "Double UV-resistant insulation",
+      "EN 50618 certified",
+      "Compatible with MC4 connectors",
+      "Flexible and heat-resistant"
+    ]
+  },
+  "6": {
+    "name": "MC4 Connectors (5 pairs)",
+    "desc": "IP67 waterproof MC4 connectors for assembling solar panels.",
+    "specs": [
+      {
+        "k": "Quantity",
+        "v": "5 paires"
+      },
+      {
+        "k": "Max current",
+        "v": "30 A"
+      },
+      {
+        "k": "Max voltage",
+        "v": "1000 V DC"
+      },
+      {
+        "k": "Protection",
+        "v": "IP67"
+      },
+      {
+        "k": "Material",
+        "v": "PP + copper"
+      },
+      {
+        "k": "Standard",
+        "v": "TÜV IEC"
+      }
+    ],
+    "feats": [
+      "IP67 sealed — rain-resistant",
+      "Quick tool-free connection",
+      "TÜV certified",
+      "Compatible with all MC4 panels"
+    ]
+  },
+  "7": {
+    "name": "Tilted Panel Mount 30°",
+    "desc": "Aluminum structure for mounting panels on flat roofs or terraces.",
+    "specs": [
+      {
+        "k": "Material",
+        "v": "Aluminium 6005-T5"
+      },
+      {
+        "k": "Tilt angle",
+        "v": "15°–45° adjustable"
+      },
+      {
+        "k": "Max load",
+        "v": "50 kg"
+      },
+      {
+        "k": "Panels",
+        "v": "1 panel"
+      },
+      {
+        "k": "Mounting",
+        "v": "Stainless screws"
+      },
+      {
+        "k": "Warranty",
+        "v": "10 years"
+      }
+    ],
+    "feats": [
+      "Anti-corrosion anodized aluminum",
+      "Adjustable tilt 15°–45°",
+      "Quick installation",
+      "Wind-resistant up to 140 km/h"
+    ]
+  },
+  "8": {
+    "name": "LED Bulb Kit 12V (×10)",
+    "desc": "Low-consumption LED bulbs, compatible with 12V solar systems.",
+    "specs": [
+      {
+        "k": "Voltage",
+        "v": "12 V DC"
+      },
+      {
+        "k": "Power",
+        "v": "7 W"
+      },
+      {
+        "k": "Flux",
+        "v": "700 lm"
+      },
+      {
+        "k": "Lifespan",
+        "v": "25 000 h"
+      },
+      {
+        "k": "Color",
+        "v": "Warm white"
+      },
+      {
+        "k": "Base",
+        "v": "E27"
+      }
+    ],
+    "feats": [
+      "80% less power consumption",
+      "12V DC compatible",
+      "Flicker-free light",
+      "Resistant to power outages"
+    ]
+  },
+  "9": {
+    "name": "30A Fuse + Fuse Holder",
+    "desc": "Essential protection for 12V/24V solar circuits.",
+    "specs": [
+      {
+        "k": "Current rating",
+        "v": "30 A"
+      },
+      {
+        "k": "Voltage",
+        "v": "12–24 V"
+      },
+      {
+        "k": "Type",
+        "v": "ANL / Blade"
+      },
+      {
+        "k": "Material",
+        "v": "Copper"
+      },
+      {
+        "k": "Included",
+        "v": "Fuse holder"
+      },
+      {
+        "k": "IP rating",
+        "v": "IP54"
+      }
+    ],
+    "feats": [
+      "Short-circuit protection",
+      "Easy installation",
+      "Compatible with cables up to 6mm²",
+      "Visual blown-fuse indicator"
+    ]
+  },
+  "10": {
+    "name": "Complete Solar Kit 500KVA",
+    "desc": "Turnkey kit: 2×250W + 200Ah battery + controller + inverter.",
+    "specs": [
+      {
+        "k": "Panels",
+        "v": "2× 250 Wc"
+      },
+      {
+        "k": "Battery",
+        "v": "200 Ah AGM"
+      },
+      {
+        "k": "Controller",
+        "v": "MPPT 30A"
+      },
+      {
+        "k": "Inverter",
+        "v": "1500 W"
+      },
+      {
+        "k": "Wiring",
+        "v": "Fully included"
+      },
+      {
+        "k": "Installation",
+        "v": "Manual + mount"
+      }
+    ],
+    "feats": [
+      "All-inclusive, ready to install",
+      "Powers up to 5 devices",
+      "2 days autonomy without sun",
+      "Free 6-month technical support"
+    ]
+  },
+  "33": {
+    "name": "Starter Solar Kit 200KVA",
+    "desc": "Ideal starter kit: 200W panel + 100Ah battery + PWM controller.",
+    "specs": [
+      {
+        "k": "Panel",
+        "v": "1× 200 Wc"
+      },
+      {
+        "k": "Battery",
+        "v": "100 Ah AGM"
+      },
+      {
+        "k": "Controller",
+        "v": "PWM 20A"
+      },
+      {
+        "k": "Inverter",
+        "v": "Not included"
+      },
+      {
+        "k": "Wiring",
+        "v": "Fully included"
+      },
+      {
+        "k": "Installation",
+        "v": "Detailed manual"
+      }
+    ],
+    "feats": [
+      "Perfect for beginners",
+      "1-hour installation",
+      "Powers lighting + chargers",
+      "Very affordable price"
+    ]
+  },
+  "34": {
+    "name": "Home Solar Kit 1000KVA",
+    "desc": "Complete kit for a 4–6 room house: 4×250W + Lithium battery + MPPT + pure sine wave inverter.",
+    "specs": [
+      {
+        "k": "Panels",
+        "v": "4× 250 Wc"
+      },
+      {
+        "k": "Battery",
+        "v": "200 Ah LiFePO4"
+      },
+      {
+        "k": "Controller",
+        "v": "MPPT 40A"
+      },
+      {
+        "k": "Inverter",
+        "v": "2000 W Pure Sine Wave"
+      },
+      {
+        "k": "Wiring",
+        "v": "Fully included"
+      },
+      {
+        "k": "Autonomy",
+        "v": "3–4 jours"
+      }
+    ],
+    "feats": [
+      "1000W total power",
+      "Long-lasting Lithium battery",
+      "Powers fridge + TV + lighting",
+      "12-month technical support"
+    ]
+  },
+  "35": {
+    "name": "Professional Solar Kit 2000KVA",
+    "desc": "Professional solution for a business or large home — maximum autonomy.",
+    "specs": [
+      {
+        "k": "Panels",
+        "v": "8× 250 Wc"
+      },
+      {
+        "k": "Battery",
+        "v": "400 Ah LiFePO4"
+      },
+      {
+        "k": "Controller",
+        "v": "MPPT 60A"
+      },
+      {
+        "k": "Inverter",
+        "v": "3000 W Pure Sine Wave"
+      },
+      {
+        "k": "Wiring",
+        "v": "Pro cables included"
+      },
+      {
+        "k": "Autonomy",
+        "v": "5–7 jours"
+      }
+    ],
+    "feats": [
+      "Complete professional installation",
+      "High-capacity 400Ah Lithium battery",
+      "Powers pump + AC + office",
+      "2-year warranty + maintenance included"
+    ]
+  },
+  "36": {
+    "name": "Portable Solar Kit 100KVA",
+    "desc": "Portable kit for camping, travel and remote areas — light and compact.",
+    "specs": [
+      {
+        "k": "Panel",
+        "v": "1× 100 Wc Flexible"
+      },
+      {
+        "k": "Battery",
+        "v": "50 Ah LiFePO4"
+      },
+      {
+        "k": "Controller",
+        "v": "MPPT 10A"
+      },
+      {
+        "k": "Output",
+        "v": "USB + 12V DC"
+      },
+      {
+        "k": "Total weight",
+        "v": "5 kg"
+      },
+      {
+        "k": "Transport",
+        "v": "Bag included"
+      }
+    ],
+    "feats": [
+      "Ultra-portable 5 kg",
+      "Flexible panel included",
+      "Charges phones + laptop + LED",
+      "Ideal for hiking and rural areas"
+    ]
+  }
+};
+window.PRODUCTS_EN = PRODUCTS_EN;
+
+// ═══════════════════════════════════════════════════════════════
+// I18N — Fandikana FR / EN
+// ═══════════════════════════════════════════════════════════════
+const I18N = {
+fr:{
+nav_home:"Accueil", nav_products:"Produits", nav_accessories:"Accessoires", nav_contact:"Contact", nav_cart:"Panier",
+hero_btn_products:"Voir les produits ↓", hero_btn_video:"▶ Voir la vidéo",
+feat1_title:"Livraison partout", feat1_desc:"Livraison en 24–48h dans toutes les régions de Madagascar",
+feat2_title:"Garantie fabricant", feat2_desc:"Tous nos produits sont certifiés CE, IEC et couverts par garantie",
+feat3_title:"Paiement mobile", feat3_desc:"MVola, Orange Money, Airtel Money ou paiement à la livraison",
+feat4_title:"Support 24/7", feat4_desc:"Une équipe disponible pour vous conseiller et vous accompagner",
+prod_tag:"Notre catalogue", prod_title:"Tous nos produits", prod_sub:"Matériel certifié, disponible en stock, livré partout à Madagascar",
+search_placeholder:"🔍 Rechercher un produit... (ex: batterie, panneau 300W)",
+cat_kits:"📦 Pack Complet", cat_panels:"☀️ Panneaux", cat_batteries:"🔋 Batteries", cat_inverters:"⚡ Onduleurs",
+cat_controllers:"🔌 Régulateurs", cat_accessories:"🔧 Accessoires", cat_all:"Tous",
+subf_panel_type:"Type de panneau", subf_battery_type:"Type de batterie", subf_inverter_type:"Type d'onduleur", subf_controller_type:"Type de régulateur",
+why_cap1:"Panneaux solaires haute performance", why_cap2:"Installations sur mesure à Madagascar", why_cap3:"Technologie certifiée et durable",
+why_cap4:"Stockage d'énergie fiable", why_cap5:"Indépendance énergétique pour votre foyer",
+why_tag:"Pourquoi nous choisir", why_title:"Le partenaire solaire<br>de confiance à Madagascar",
+why1_title:"Spécialiste solaire Madagascar", why1_desc:"Plus de 1 ans d'expertise dans l'installation et la vente de matériel solaire adapté au marché malgache.",
+why2_title:"Produits certifiés et garantis", why2_desc:"Tous nos produits sont certifiés CE, IEC 61215 et accompagnés d'une garantie fabricant allant jusqu'à 5 ans.",
+why3_title:"Prix compétitifs", why3_desc:"Importation directe, sans intermédiaire — nous vous offrons les meilleurs prix du marché malgache.",
+why4_title:"Accompagnement personnalisé", why4_desc:"Notre équipe vous guide dans le choix du bon matériel selon vos besoins en énergie et votre budget.",
+testi_tag:"Avis clients", testi_title:"Ce que disent nos clients", testi_sub:"Plus de 500 familles et entreprises nous font confiance à Madagascar",
+testi1_text:"\"Produits de très bonne qualité ! Mon panneau 300KVA fonctionne parfaitement depuis 8 mois. Livraison rapide à Toamasina.\"",
+testi2_text:"\"Le kit complet 500W a transformé notre maison. Plus de coupures de courant ! Le paiement via MVola était très pratique.\"",
+testi3_text:"\"Très bon service client. Ils m'ont aidé à choisir la bonne batterie pour mon installation. Je recommande vivement !\"",
+cta_title:"🌞 Livraison gratuite dès 100K d'achat", cta_desc:"Profitez de nos promotions en cours sur les batteries et kits solaires complets",
+cta_btn1:"Voir les promotions", cta_btn2:"Nous contacter",
+contact_tag:"Parlons-en", contact_title:"Contactez-nous", contact_sub:"Une question, un projet d'installation ? Notre équipe vous répond rapidement",
+contact_form_title:"Envoyez-nous un message",
+label_fullname:"Nom complet", ph_your_name:"Votre nom", label_phone:"Téléphone", label_email:"Email", label_subject:"Sujet",
+opt_quote:"Demande de devis", opt_product_q:"Question produit", opt_support:"Support technique", opt_partnership:"Partenariat", opt_other:"Autre",
+label_message:"Message", ph_describe_need:"Décrivez votre besoin...", btn_send_message:"Envoyer le message →",
+footer_about:"Votre spécialiste de l'énergie solaire à Madagascar. Matériel certifié, prix compétitifs, livraison partout dans l'île.",
+footer_nav_title:"Navigation", footer_cat_title:"Catégories", footer_cat_panels:"Panneaux solaires",
+cat_batteries_plain:"Batteries", cat_inverters_plain:"Onduleurs", cat_kits_plain:"Pack Complet",
+footer_address:"Antananarivo, Madagascar<br>Ouvert Lu–Sa 8AM–06PM", footer_rights:"Tous droits réservés", footer_payments:"Paiements :",
+modal_specs_title:"📋 Caractéristiques", modal_advantages_title:"✅ Avantages", modal_in_stock:"En stock", modal_quantity:"Quantité :",
+btn_add_to_cart:"🛒 Ajouter au panier", btn_add_to_wishlist:"♡ Ajouter aux favoris",
+perk_free_ship:"Livraison gratuite dès 860 000 Ar", perk_return:"Retour sous 30 jours", perk_warranty:"Garantie fabricant incluse", perk_mobile_pay:"Paiement mobile money accepté",
+cart_title:"Mon Panier", cart_empty_title:"Panier vide", cart_empty_sub:"Ajoutez des produits pour commencer",
+cart_subtotal:"Sous-total", cart_shipping:"Livraison", cart_total:"Total", btn_checkout:"Passer la commande →", btn_continue_shopping:"Continuer mes achats",
+fav_title:"Mes Favoris", fav_empty_title:"Aucun favori", fav_empty_sub:"Cliquez sur ♡ pour ajouter un produit",
+btn_add_all_cart:"🛒 Tout ajouter au panier", btn_clear_fav:"🗑 Vider les favoris",
+step_delivery:"Livraison", step_payment:"Paiement", step_confirmation:"Confirmation",
+co1_title:"📦 Adresse de livraison", label_firstname:"Prénom", label_lastname:"Nom", label_address:"Adresse complète",
+ph_address:"Lot, rue, quartier...", label_city:"Ville", opt_choose:"Choisir...", label_zipcode:"Code postal",
+btn_cancel:"✕ Annuler", btn_continue_payment:"Continuer → Paiement",
+co2_title:"💳 Mode de paiement", pay_telma:"Telma", pay_orange:"Orange", pay_airtel:"Airtel", pay_cash:"Espèces", pay_on_delivery:"À la livraison",
+co_summary:"Récapitulatif", co_total_due:"Total à payer", btn_back:"← Retour", btn_confirm_order:"✅ Confirmer la commande",
+co3_title:"Commande confirmée !", co3_desc:"Merci pour votre commande. Notre équipe vous contactera dans les <strong>2 heures</strong> pour confirmer la livraison.",
+co_ref_label:"Numéro de commande", co_conf_delivery:"📦 Livraison", co_conf_payment:"💳 Paiement", co_conf_items:"🛒 Articles",
+co_info_box:"🚚 Livraison estimée : 24–48h &nbsp;|&nbsp; Conservez votre numéro de commande",
+btn_download_invoice:"🖨️ Télécharger la facture", btn_back_shop:"🏠 Retour à la boutique",
+video_title:"⚡ L'énergie solaire avec Soltex", video_sub:"Découvrez comment nous accompagnons les familles et entreprises de Madagascar vers l'indépendance énergétique",
+toast_added_cart:"✅ Ajouté au panier", toast_added_fav:"♡ Ajouté aux favoris", toast_removed_fav:"Retiré des favoris",
+toast_fav_empty:"⚠️ Aucun favori", toast_all_added:"✅ Tous les favoris ajoutés au panier", toast_fav_cleared:"🗑 Favoris vidés",
+toast_fill_fields:"⚠️ Merci de remplir tous les champs", toast_fill_contact:"⚠️ Merci de remplir tous les champs",
+toast_msg_sending:"✅ Ouverture de votre messagerie...", toast_no_order:"⚠️ Aucune commande à imprimer",
+toast_search_none:"Aucun produit ne correspond à",
+cart_1_item:"article", cart_n_items:"articles",
+invoice_title:"FACTURE", invoice_seller:"Vendeur", invoice_client:"Client", invoice_article:"Article", invoice_qty:"Qté",
+invoice_unit_price:"Prix unit.", invoice_total:"Total", invoice_subtotal:"Sous-total", invoice_shipping:"Livraison",
+invoice_free:"Gratuite", invoice_payment_method:"Mode de paiement", invoice_total_paid:"Total payé", invoice_thanks:"Merci pour votre achat chez Soltex !",
+},
+en:{
+nav_home:"Home", nav_products:"Products", nav_accessories:"Accessories", nav_contact:"Contact", nav_cart:"Cart",
+hero_btn_products:"View products ↓", hero_btn_video:"▶ Watch video",
+feat1_title:"Nationwide delivery", feat1_desc:"Delivery within 24–48h to every region of Madagascar",
+feat2_title:"Manufacturer warranty", feat2_desc:"All our products are CE, IEC certified and covered by warranty",
+feat3_title:"Mobile payment", feat3_desc:"MVola, Orange Money, Airtel Money or cash on delivery",
+feat4_title:"24/7 Support", feat4_desc:"A team available to advise and support you",
+prod_tag:"Our catalog", prod_title:"All our products", prod_sub:"Certified equipment, in stock, delivered anywhere in Madagascar",
+search_placeholder:"🔍 Search for a product... (e.g. battery, 300W panel)",
+cat_kits:"📦 Complete Kits", cat_panels:"☀️ Panels", cat_batteries:"🔋 Batteries", cat_inverters:"⚡ Inverters",
+cat_controllers:"🔌 Controllers", cat_accessories:"🔧 Accessories", cat_all:"All",
+subf_panel_type:"Panel type", subf_battery_type:"Battery type", subf_inverter_type:"Inverter type", subf_controller_type:"Controller type",
+why_cap1:"High-performance solar panels", why_cap2:"Custom installations in Madagascar", why_cap3:"Certified, durable technology",
+why_cap4:"Reliable energy storage", why_cap5:"Energy independence for your home",
+why_tag:"Why choose us", why_title:"The trusted solar<br>partner in Madagascar",
+why1_title:"Solar specialist in Madagascar", why1_desc:"Over 1 year of expertise installing and selling solar equipment suited to the Malagasy market.",
+why2_title:"Certified, guaranteed products", why2_desc:"All our products are CE, IEC 61215 certified and backed by a manufacturer warranty of up to 5 years.",
+why3_title:"Competitive prices", why3_desc:"Direct import, no middleman — we offer you the best prices on the Malagasy market.",
+why4_title:"Personalized guidance", why4_desc:"Our team helps you choose the right equipment for your energy needs and budget.",
+testi_tag:"Customer reviews", testi_title:"What our customers say", testi_sub:"Over 500 families and businesses trust us in Madagascar",
+testi1_text:"\"Very good quality products! My 300KVA panel has been working perfectly for 8 months. Fast delivery to Toamasina.\"",
+testi2_text:"\"The 500W complete kit transformed our home. No more power outages! Paying via MVola was very convenient.\"",
+testi3_text:"\"Very good customer service. They helped me choose the right battery for my installation. Highly recommend!\"",
+cta_title:"🌞 Free delivery from 100K purchase", cta_desc:"Take advantage of our current promotions on batteries and complete solar kits",
+cta_btn1:"View promotions", cta_btn2:"Contact us",
+contact_tag:"Let's talk", contact_title:"Contact us", contact_sub:"A question, an installation project? Our team responds quickly",
+contact_form_title:"Send us a message",
+label_fullname:"Full name", ph_your_name:"Your name", label_phone:"Phone", label_email:"Email", label_subject:"Subject",
+opt_quote:"Quote request", opt_product_q:"Product question", opt_support:"Technical support", opt_partnership:"Partnership", opt_other:"Other",
+label_message:"Message", ph_describe_need:"Describe your needs...", btn_send_message:"Send message →",
+footer_about:"Your solar energy specialist in Madagascar. Certified equipment, competitive prices, delivery across the island.",
+footer_nav_title:"Navigation", footer_cat_title:"Categories", footer_cat_panels:"Solar panels",
+cat_batteries_plain:"Batteries", cat_inverters_plain:"Inverters", cat_kits_plain:"Complete Kits",
+footer_address:"Antananarivo, Madagascar<br>Open Mon–Sat 8AM–06PM", footer_rights:"All rights reserved", footer_payments:"Payments:",
+modal_specs_title:"📋 Specifications", modal_advantages_title:"✅ Benefits", modal_in_stock:"In stock", modal_quantity:"Quantity:",
+btn_add_to_cart:"🛒 Add to cart", btn_add_to_wishlist:"♡ Add to wishlist",
+perk_free_ship:"Free delivery from 860,000 Ar", perk_return:"30-day return policy", perk_warranty:"Manufacturer warranty included", perk_mobile_pay:"Mobile money payment accepted",
+cart_title:"My Cart", cart_empty_title:"Empty cart", cart_empty_sub:"Add products to get started",
+cart_subtotal:"Subtotal", cart_shipping:"Shipping", cart_total:"Total", btn_checkout:"Checkout →", btn_continue_shopping:"Continue shopping",
+fav_title:"My Wishlist", fav_empty_title:"No favorites", fav_empty_sub:"Click ♡ to add a product",
+btn_add_all_cart:"🛒 Add all to cart", btn_clear_fav:"🗑 Clear wishlist",
+step_delivery:"Delivery", step_payment:"Payment", step_confirmation:"Confirmation",
+co1_title:"📦 Delivery address", label_firstname:"First name", label_lastname:"Last name", label_address:"Full address",
+ph_address:"Lot, street, neighborhood...", label_city:"City", opt_choose:"Choose...", label_zipcode:"Zip code",
+btn_cancel:"✕ Cancel", btn_continue_payment:"Continue → Payment",
+co2_title:"💳 Payment method", pay_telma:"Telma", pay_orange:"Orange", pay_airtel:"Airtel", pay_cash:"Cash", pay_on_delivery:"On delivery",
+co_summary:"Summary", co_total_due:"Total due", btn_back:"← Back", btn_confirm_order:"✅ Confirm order",
+co3_title:"Order confirmed!", co3_desc:"Thank you for your order. Our team will contact you within <strong>2 hours</strong> to confirm delivery.",
+co_ref_label:"Order number", co_conf_delivery:"📦 Delivery", co_conf_payment:"💳 Payment", co_conf_items:"🛒 Items",
+co_info_box:"🚚 Estimated delivery: 24–48h &nbsp;|&nbsp; Keep your order number",
+btn_download_invoice:"🖨️ Download invoice", btn_back_shop:"🏠 Back to shop",
+video_title:"⚡ Solar energy with Soltex", video_sub:"Discover how we help families and businesses in Madagascar achieve energy independence",
+toast_added_cart:"✅ Added to cart", toast_added_fav:"♡ Added to wishlist", toast_removed_fav:"Removed from wishlist",
+toast_fav_empty:"⚠️ No favorites", toast_all_added:"✅ All favorites added to cart", toast_fav_cleared:"🗑 Wishlist cleared",
+toast_fill_fields:"⚠️ Please fill in all fields", toast_fill_contact:"⚠️ Please fill in all fields",
+toast_msg_sending:"✅ Opening your mail app...", toast_no_order:"⚠️ No order to print",
+toast_search_none:"No product matches",
+cart_1_item:"item", cart_n_items:"items",
+invoice_title:"INVOICE", invoice_seller:"Seller", invoice_client:"Client", invoice_article:"Item", invoice_qty:"Qty",
+invoice_unit_price:"Unit price", invoice_total:"Total", invoice_subtotal:"Subtotal", invoice_shipping:"Shipping",
+invoice_free:"Free", invoice_payment_method:"Payment method", invoice_total_paid:"Total paid", invoice_thanks:"Thank you for shopping with Soltex!",
+}
+};
+
+let currentLang = localStorage.getItem('soltex_lang') || 'fr';
+
+function t(key){
+  return (I18N[currentLang] && I18N[currentLang][key]) || (I18N.fr[key]) || key;
+}
+
+function switchLanguage(lang){
+  currentLang = lang;
+  localStorage.setItem('soltex_lang', lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-lang-btn]').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-lang-btn')===lang);
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    el.innerHTML = t(key);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.setAttribute('placeholder', t(key));
+  });
+  // Averina alaina daholo ny votoatiny miova arakaraka ny produits
+  renderProducts();
+  renderCart();
+  if(document.getElementById('modalOverlay').classList.contains('open') && currentProduct){
+    openModal(currentProduct._rawId!==undefined ? currentProduct._rawId : currentProduct.id);
+  }
+}
+
+// ── FANDIKANA NY PRODUITS (name/desc/specs/feats) HO ANGLISY ──
+function localizeProduct(p){
+  if(currentLang!=='en' || !window.PRODUCTS_EN || !PRODUCTS_EN[p.id]) return p;
+  const tr = PRODUCTS_EN[p.id];
+  return { ...p, name: tr.name, desc: tr.desc, specs: tr.specs, feats: tr.feats };
+}
+
+
 // ── INIT ──
 renderProducts();
 renderCart();
 loadProductsFromSupabase();
+switchLanguage(currentLang);
 trackSiteVisit();

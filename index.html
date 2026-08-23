@@ -3,24 +3,27 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
 <title>Soltex — Énergie Solaire Madagascar | Panneaux, Batteries, Onduleurs</title>
 <meta name="description" content="Soltex : vente de panneaux solaires, batteries, onduleurs, régulateurs et accessoires solaires à Madagascar. Livraison partout dans le pays, paiement MVola, Orange Money, Airtel Money."/>
 <meta name="keywords" content="énergie solaire Madagascar, panneau solaire, batterie solaire, onduleur, kit solaire, Soltex, MVola, Orange Money"/>
 <meta name="author" content="Soltex"/>
 <meta name="robots" content="index, follow"/>
-<link rel="canonical" href="https://REMPLACE-PAR-TON-URL.com/"/>
+<link rel="canonical" href="https://soltex-mada.netlify.app/"/>
 
 <!-- Open Graph (partage Facebook, WhatsApp...) -->
 <meta property="og:type" content="website"/>
 <meta property="og:title" content="Soltex — Énergie Solaire Madagascar"/>
 <meta property="og:description" content="Panneaux, batteries, onduleurs et accessoires solaires certifiés, livrés partout à Madagascar."/>
-<meta property="og:url" content="https://REMPLACE-PAR-TON-URL.com/"/>
+<meta property="og:url" content="https://soltex-mada.netlify.app/"/>
+<meta property="og:image" content="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&q=80"/>
 <meta property="og:locale" content="fr_MG"/>
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="Soltex — Énergie Solaire Madagascar"/>
 <meta name="twitter:description" content="Panneaux, batteries, onduleurs et accessoires solaires certifiés, livrés partout à Madagascar."/>
+<meta name="twitter:image" content="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=1200&q=80"/>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 
@@ -34,21 +37,25 @@
 <nav class="nav" id="mainNav">
   <div class="nav-logo">Sol<span>tex</span></div>
   <ul class="nav-menu" id="navMenu">
-    <li><a onclick="scrollToSection('hero')" class="active">Accueil</a></li>
-    <li><a onclick="filterCat('all');scrollToSection('produits')">Produits</a></li>
-    <li><a onclick="filterCat('ACCESSOIRES');scrollToSection('produits')">Accessoires</a></li>
-    <li><a onclick="scrollToSection('contact')">Contact</a></li>
+    <li><a onclick="scrollToSection('hero')" class="active" data-i18n="nav_home">Accueil</a></li>
+    <li><a onclick="filterCat('all');scrollToSection('produits')" data-i18n="nav_products">Produits</a></li>
+    <li><a onclick="filterCat('ACCESSOIRES');scrollToSection('produits')" data-i18n="nav_accessories">Accessoires</a></li>
+    <li><a onclick="scrollToSection('contact')" data-i18n="nav_contact">Contact</a></li>
   </ul>
   <div class="nav-actions">
     <button class="nav-fav" onclick="toggleFav()">
       ♡ <span class="fav-badge" id="favCount" style="display:none">0</span>
     </button>
     <button class="nav-cart" onclick="toggleCart()">
-      🛒 Panier <span class="cart-badge" id="cartCount">0</span>
+      🛒 <span data-i18n="nav_cart">Panier</span> <span class="cart-badge" id="cartCount">0</span>
     </button>
     <button class="hamburger" onclick="toggleMenu()" id="hamburger">
       <span></span><span></span><span></span>
     </button>
+    <div class="lang-switch" id="langSwitch">
+      <button class="lang-btn active" onclick="switchLanguage('fr')" data-lang-btn="fr">FR</button>
+      <button class="lang-btn" onclick="switchLanguage('en')" data-lang-btn="en">EN</button>
+    </div>
   </div>
 </nav>
 
@@ -71,8 +78,8 @@
       <h1 id="heroTitle">L'énergie solaire,<br><span class="accent">accessible à tous</span></h1>
       <p class="hero-desc" id="heroDesc">Panneaux, batteries, onduleurs et accessoires — tout le matériel certifié pour votre installation solaire, livré partout à Madagascar.</p>
       <div class="hero-btns">
-        <button class="btn-hero-primary" onclick="scrollToSection('produits')">Voir les produits ↓</button>
-        <button class="btn-hero-outline" onclick="openVideoModal()">▶ Voir la vidéo</button>
+        <button class="btn-hero-primary" onclick="scrollToSection('produits')" data-i18n="hero_btn_products">Voir les produits ↓</button>
+        <button class="btn-hero-outline" onclick="openVideoModal()" data-i18n="hero_btn_video">▶ Voir la vidéo</button>
       </div>
       <div class="hero-stats" id="heroStats">
         <div><div class="hero-stat-num">500+</div><div class="hero-stat-label">Clients satisfaits</div></div>
@@ -102,23 +109,23 @@
   <div class="features-inner">
     <div class="feat-item">
       <div class="feat-icon">🚚</div>
-      <div class="feat-title">Livraison partout</div>
-      <div class="feat-desc">Livraison en 24–48h dans toutes les régions de Madagascar</div>
+      <div class="feat-title" data-i18n="feat1_title">Livraison partout</div>
+      <div class="feat-desc" data-i18n="feat1_desc">Livraison en 24–48h dans toutes les régions de Madagascar</div>
     </div>
     <div class="feat-item">
       <div class="feat-icon">🛡️</div>
-      <div class="feat-title">Garantie fabricant</div>
-      <div class="feat-desc">Tous nos produits sont certifiés CE, IEC et couverts par garantie</div>
+      <div class="feat-title" data-i18n="feat2_title">Garantie fabricant</div>
+      <div class="feat-desc" data-i18n="feat2_desc">Tous nos produits sont certifiés CE, IEC et couverts par garantie</div>
     </div>
     <div class="feat-item">
       <div class="feat-icon">💳</div>
-      <div class="feat-title">Paiement mobile</div>
-      <div class="feat-desc">MVola, Orange Money, Airtel Money ou paiement à la livraison</div>
+      <div class="feat-title" data-i18n="feat3_title">Paiement mobile</div>
+      <div class="feat-desc" data-i18n="feat3_desc">MVola, Orange Money, Airtel Money ou paiement à la livraison</div>
     </div>
     <div class="feat-item">
       <div class="feat-icon">📞</div>
-      <div class="feat-title">Support 24/7</div>
-      <div class="feat-desc">Une équipe disponible pour vous conseiller et vous accompagner</div>
+      <div class="feat-title" data-i18n="feat4_title">Support 24/7</div>
+      <div class="feat-desc" data-i18n="feat4_desc">Une équipe disponible pour vous conseiller et vous accompagner</div>
     </div>
   </div>
 </div>
@@ -139,25 +146,25 @@
 <section id="produits" class="products-bg">
 <div class="section">
   <div class="section-header">
-    <div class="section-tag">Notre catalogue</div>
-    <h2 class="section-title">Tous nos produits</h2>
-    <p class="section-sub">Matériel certifié, disponible en stock, livré partout à Madagascar</p>
+    <div class="section-tag" data-i18n="prod_tag">Notre catalogue</div>
+    <h2 class="section-title" data-i18n="prod_title">Tous nos produits</h2>
+    <p class="section-sub" data-i18n="prod_sub">Matériel certifié, disponible en stock, livré partout à Madagascar</p>
   </div>
   <div class="search-bar-wrap">
-    <input type="text" id="productSearch" class="search-bar-input" placeholder="🔍 Karohy ny entana... (ohatra: batterie, panneau 300W)" oninput="searchProducts(this.value)"/>
+    <input type="text" id="productSearch" class="search-bar-input" placeholder="🔍 Karohy ny entana... (ohatra: batterie, panneau 300W)" data-i18n-placeholder="search_placeholder" oninput="searchProducts(this.value)"/>
   </div>
   <div class="cat-tabs" id="catTabs">
-    <button class="cat-tab active" onclick="filterCat('KITS')">📦 Pack Complet</button>
-    <button class="cat-tab" onclick="filterCat('PANNEAUX')">☀️ Panneaux</button>
-    <button class="cat-tab" onclick="filterCat('BATTERIES')">🔋 Batteries</button>
-    <button class="cat-tab" onclick="filterCat('ONDULEURS')">⚡ Onduleurs</button>
-    <button class="cat-tab" onclick="filterCat('RÉGULATEURS')">🔌 Régulateurs</button>
-    <button class="cat-tab" onclick="filterCat('ACCESSOIRES')">🔧 Accessoires</button>
-    <button class="cat-tab" onclick="filterCat('all')">Tous</button>
+    <button class="cat-tab active" onclick="filterCat('KITS')" data-i18n="cat_kits">📦 Pack Complet</button>
+    <button class="cat-tab" onclick="filterCat('PANNEAUX')" data-i18n="cat_panels">☀️ Panneaux</button>
+    <button class="cat-tab" onclick="filterCat('BATTERIES')" data-i18n="cat_batteries">🔋 Batteries</button>
+    <button class="cat-tab" onclick="filterCat('ONDULEURS')" data-i18n="cat_inverters">⚡ Onduleurs</button>
+    <button class="cat-tab" onclick="filterCat('RÉGULATEURS')" data-i18n="cat_controllers">🔌 Régulateurs</button>
+    <button class="cat-tab" onclick="filterCat('ACCESSOIRES')" data-i18n="cat_accessories">🔧 Accessoires</button>
+    <button class="cat-tab" onclick="filterCat('all')" data-i18n="cat_all">Tous</button>
   </div>
   <!-- Sub-filtre panneaux -->
   <div id="panneau-subfilter" style="display:none;margin-bottom:1.5rem">
-    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g400);margin-bottom:.6rem;text-align:center">Type de panneau</div>
+    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g400);margin-bottom:.6rem;text-align:center" data-i18n="subf_panel_type">Type de panneau</div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center">
       <button class="sub-tab active" onclick="filterType('all')">Tous</button>
       <button class="sub-tab" onclick="filterType('Monocristallin')">☀️ Monocristallin</button>
@@ -168,7 +175,7 @@
   </div>
   <!-- Sub-filtre batteries -->
   <div id="batterie-subfilter" style="display:none;margin-bottom:1.5rem">
-    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g400);margin-bottom:.6rem;text-align:center">Type de batterie</div>
+    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g400);margin-bottom:.6rem;text-align:center" data-i18n="subf_battery_type">Type de batterie</div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center">
       <button class="sub-tab active" onclick="filterType('all')">Tous</button>
       <button class="sub-tab" onclick="filterType('AGM')">🔋 AGM</button>
@@ -179,7 +186,7 @@
   </div>
   <!-- Sub-filtre onduleurs -->
   <div id="onduleur-subfilter" style="display:none;margin-bottom:1.5rem">
-    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g400);margin-bottom:.6rem;text-align:center">Type d'onduleur</div>
+    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g400);margin-bottom:.6rem;text-align:center" data-i18n="subf_inverter_type">Type d'onduleur</div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center">
       <button class="sub-tab active" onclick="filterType('all')">Tous</button>
       <button class="sub-tab" onclick="filterType('Pur Sinus')">🔵 Pur Sinus</button>
@@ -188,7 +195,7 @@
   </div>
   <!-- Sub-filtre régulateurs -->
   <div id="regulateur-subfilter" style="display:none;margin-bottom:1.5rem">
-    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g400);margin-bottom:.6rem;text-align:center">Type de régulateur</div>
+    <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--g400);margin-bottom:.6rem;text-align:center" data-i18n="subf_controller_type">Type de régulateur</div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center">
       <button class="sub-tab active" onclick="filterType('all')">Tous</button>
       <button class="sub-tab" onclick="filterType('PWM')">🔧 PWM</button>
@@ -204,45 +211,45 @@
 <div class="section">
   <div class="why-grid">
     <div class="why-img" id="whySlideshow">
-      <div class="why-slide active"><img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=700&q=80" alt="Installation panneaux solaires"/><div class="why-slide-caption">Panneaux solaires haute performance</div></div>
-      <div class="why-slide"><img src="https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=700&q=80" alt="Champ de panneaux solaires"/><div class="why-slide-caption">Installations sur mesure à Madagascar</div></div>
-      <div class="why-slide"><img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=700&q=80" alt="Technologie solaire"/><div class="why-slide-caption">Technologie certifiée et durable</div></div>
-      <div class="why-slide"><img src="https://images.unsplash.com/photo-1620714223084-862fa1d0e0a6?w=700&q=80" alt="Batteries solaires"/><div class="why-slide-caption">Stockage d'énergie fiable</div></div>
-      <div class="why-slide"><img src="https://images.unsplash.com/photo-1559302995-f1d6e557ddc6?w=700&q=80" alt="Maison équipée solaire"/><div class="why-slide-caption">Indépendance énergétique pour votre foyer</div></div>
+      <div class="why-slide active"><img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=700&q=80" alt="Installation panneaux solaires"/><div class="why-slide-caption" data-i18n="why_cap1">Panneaux solaires haute performance</div></div>
+      <div class="why-slide"><img src="https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=700&q=80" alt="Champ de panneaux solaires"/><div class="why-slide-caption" data-i18n="why_cap2">Installations sur mesure à Madagascar</div></div>
+      <div class="why-slide"><img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=700&q=80" alt="Technologie solaire"/><div class="why-slide-caption" data-i18n="why_cap3">Technologie certifiée et durable</div></div>
+      <div class="why-slide"><img src="https://images.unsplash.com/photo-1620714223084-862fa1d0e0a6?w=700&q=80" alt="Batteries solaires"/><div class="why-slide-caption" data-i18n="why_cap4">Stockage d'énergie fiable</div></div>
+      <div class="why-slide"><img src="https://images.unsplash.com/photo-1559302995-f1d6e557ddc6?w=700&q=80" alt="Maison équipée solaire"/><div class="why-slide-caption" data-i18n="why_cap5">Indépendance énergétique pour votre foyer</div></div>
       <button class="why-slide-arrow why-arrow-prev" onclick="whyPrev()">‹</button>
       <button class="why-slide-arrow why-arrow-next" onclick="whyNext()">›</button>
       <div class="why-dots" id="whyDots"></div>
     </div>
     <div>
-      <div class="section-tag">Pourquoi nous choisir</div>
-      <h2 class="section-title" style="text-align:left;margin-bottom:1.5rem">Le partenaire solaire<br>de confiance à Madagascar</h2>
+      <div class="section-tag" data-i18n="why_tag">Pourquoi nous choisir</div>
+      <h2 class="section-title" style="text-align:left;margin-bottom:1.5rem" data-i18n="why_title">Le partenaire solaire<br>de confiance à Madagascar</h2>
       <div class="why-list">
         <div class="why-item">
           <div class="why-icon">🎯</div>
           <div>
-            <div class="why-item-title">Spécialiste solaire Madagascar</div>
-            <div class="why-item-desc">Plus de 1 ans d'expertise dans l'installation et la vente de matériel solaire adapté au marché malgache.</div>
+            <div class="why-item-title" data-i18n="why1_title">Spécialiste solaire Madagascar</div>
+            <div class="why-item-desc" data-i18n="why1_desc">Plus de 1 ans d'expertise dans l'installation et la vente de matériel solaire adapté au marché malgache.</div>
           </div>
         </div>
         <div class="why-item">
           <div class="why-icon">✅</div>
           <div>
-            <div class="why-item-title">Produits certifiés et garantis</div>
-            <div class="why-item-desc">Tous nos produits sont certifiés CE, IEC 61215 et accompagnés d'une garantie fabricant allant jusqu'à 5 ans.</div>
+            <div class="why-item-title" data-i18n="why2_title">Produits certifiés et garantis</div>
+            <div class="why-item-desc" data-i18n="why2_desc">Tous nos produits sont certifiés CE, IEC 61215 et accompagnés d'une garantie fabricant allant jusqu'à 5 ans.</div>
           </div>
         </div>
         <div class="why-item">
           <div class="why-icon">💰</div>
           <div>
-            <div class="why-item-title">Prix compétitifs</div>
-            <div class="why-item-desc">Importation directe, sans intermédiaire — nous vous offrons les meilleurs prix du marché malgache.</div>
+            <div class="why-item-title" data-i18n="why3_title">Prix compétitifs</div>
+            <div class="why-item-desc" data-i18n="why3_desc">Importation directe, sans intermédiaire — nous vous offrons les meilleurs prix du marché malgache.</div>
           </div>
         </div>
         <div class="why-item">
           <div class="why-icon">🤝</div>
           <div>
-            <div class="why-item-title">Accompagnement personnalisé</div>
-            <div class="why-item-desc">Notre équipe vous guide dans le choix du bon matériel selon vos besoins en énergie et votre budget.</div>
+            <div class="why-item-title" data-i18n="why4_title">Accompagnement personnalisé</div>
+            <div class="why-item-desc" data-i18n="why4_desc">Notre équipe vous guide dans le choix du bon matériel selon vos besoins en énergie et votre budget.</div>
           </div>
         </div>
       </div>
@@ -254,14 +261,14 @@
 <div class="testi-bg">
   <div class="testi-inner">
     <div class="testi-header">
-      <div class="section-tag" style="background:rgba(245,158,11,.15);color:var(--gold2)">Avis clients</div>
-      <h2 class="testi-title">Ce que disent nos clients</h2>
-      <p class="testi-sub">Plus de 500 familles et entreprises nous font confiance à Madagascar</p>
+      <div class="section-tag" style="background:rgba(245,158,11,.15);color:var(--gold2)" data-i18n="testi_tag">Avis clients</div>
+      <h2 class="testi-title" data-i18n="testi_title">Ce que disent nos clients</h2>
+      <p class="testi-sub" data-i18n="testi_sub">Plus de 500 familles et entreprises nous font confiance à Madagascar</p>
     </div>
     <div class="testi-grid">
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">"Produits de très bonne qualité ! Mon panneau 300KVA fonctionne parfaitement depuis 8 mois. Livraison rapide à Toamasina."</p>
+        <p class="testi-text" data-i18n="testi1_text">"Produits de très bonne qualité ! Mon panneau 300KVA fonctionne parfaitement depuis 8 mois. Livraison rapide à Toamasina."</p>
         <div class="testi-author">
           <div class="testi-avatar">R</div>
           <div><div class="testi-name">Rakoto Jean</div><div class="testi-loc">📍 Toamasina</div></div>
@@ -269,7 +276,7 @@
       </div>
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">"Le kit complet 500W a transformé notre maison. Plus de coupures de courant ! Le paiement via MVola était très pratique."</p>
+        <p class="testi-text" data-i18n="testi2_text">"Le kit complet 500W a transformé notre maison. Plus de coupures de courant ! Le paiement via MVola était très pratique."</p>
         <div class="testi-author">
           <div class="testi-avatar">S</div>
           <div><div class="testi-name">Soamalala Fara</div><div class="testi-loc">📍 Fianarantsoa</div></div>
@@ -277,7 +284,7 @@
       </div>
       <div class="testi-card">
         <div class="testi-stars">★★★★☆</div>
-        <p class="testi-text">"Très bon service client. Ils m'ont aidé à choisir la bonne batterie pour mon installation. Je recommande vivement !"</p>
+        <p class="testi-text" data-i18n="testi3_text">"Très bon service client. Ils m'ont aidé à choisir la bonne batterie pour mon installation. Je recommande vivement !"</p>
         <div class="testi-author">
           <div class="testi-avatar">A</div>
           <div><div class="testi-name">Andriantsoa Paul</div><div class="testi-loc">📍 Antananarivo</div></div>
@@ -289,11 +296,11 @@
 
 <!-- ══ CTA BANNER ══ -->
 <div class="cta-banner">
-  <h2>🌞 Livraison gratuite dès 100K d'achat</h2>
-  <p>Profitez de nos promotions en cours sur les batteries et kits solaires complets</p>
+  <h2 data-i18n="cta_title">🌞 Livraison gratuite dès 100K d'achat</h2>
+  <p data-i18n="cta_desc">Profitez de nos promotions en cours sur les batteries et kits solaires complets</p>
   <div class="cta-btns">
-    <button class="btn-cta-white" onclick="scrollToSection('produits')">Voir les promotions</button>
-    <button class="btn-cta-outline" onclick="scrollToSection('contact')">Nous contacter</button>
+    <button class="btn-cta-white" onclick="scrollToSection('produits')" data-i18n="cta_btn1">Voir les promotions</button>
+    <button class="btn-cta-outline" onclick="scrollToSection('contact')" data-i18n="cta_btn2">Nous contacter</button>
   </div>
 </div>
 
@@ -301,38 +308,38 @@
 <section id="contact">
 <div class="section">
   <div class="section-header">
-    <div class="section-tag">Parlons-en</div>
-    <h2 class="section-title">Contactez-nous</h2>
-    <p class="section-sub">Une question, un projet d'installation ? Notre équipe vous répond rapidement</p>
+    <div class="section-tag" data-i18n="contact_tag">Parlons-en</div>
+    <h2 class="section-title" data-i18n="contact_title">Contactez-nous</h2>
+    <p class="section-sub" data-i18n="contact_sub">Une question, un projet d'installation ? Notre équipe vous répond rapidement</p>
   </div>
 
   <div class="contact-form-card" style="max-width:640px;margin:0 auto">
-    <h3>Envoyez-nous un message</h3>
+    <h3 data-i18n="contact_form_title">Envoyez-nous un message</h3>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Nom complet</label><input class="form-input" id="ctName" placeholder="Votre nom"/></div>
-      <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" id="ctTel" placeholder="+261 34 00 000 00"/></div>
+      <div class="form-group"><label class="form-label" data-i18n="label_fullname">Nom complet</label><input class="form-input" id="ctName" placeholder="Votre nom" data-i18n-placeholder="ph_your_name"/></div>
+      <div class="form-group"><label class="form-label" data-i18n="label_phone">Téléphone</label><input class="form-input" id="ctTel" placeholder="+261 34 00 000 00"/></div>
     </div>
     <div class="form-row form-full">
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="ctEmail" placeholder="votre@email.com"/></div>
+      <div class="form-group"><label class="form-label" data-i18n="label_email">Email</label><input class="form-input" type="email" id="ctEmail" placeholder="votre@email.com"/></div>
     </div>
     <div class="form-row form-full">
-      <div class="form-group"><label class="form-label">Sujet</label>
+      <div class="form-group"><label class="form-label" data-i18n="label_subject">Sujet</label>
         <select class="form-select" id="ctSubject">
-          <option>Demande de devis</option>
-          <option>Question produit</option>
-          <option>Support technique</option>
-          <option>Partenariat</option>
-          <option>Autre</option>
+          <option data-i18n="opt_quote">Demande de devis</option>
+          <option data-i18n="opt_product_q">Question produit</option>
+          <option data-i18n="opt_support">Support technique</option>
+          <option data-i18n="opt_partnership">Partenariat</option>
+          <option data-i18n="opt_other">Autre</option>
         </select>
       </div>
     </div>
     <div class="form-row form-full">
       <div class="form-group">
-        <label class="form-label">Message</label>
-        <textarea class="form-input" id="ctMessage" rows="4" placeholder="Décrivez votre besoin..." style="resize:vertical;font-family:'Inter',sans-serif"></textarea>
+        <label class="form-label" data-i18n="label_message">Message</label>
+        <textarea class="form-input" id="ctMessage" rows="4" placeholder="Décrivez votre besoin..." style="resize:vertical;font-family:'Inter',sans-serif" data-i18n-placeholder="ph_describe_need"></textarea>
       </div>
     </div>
-    <button class="contact-submit-btn" onclick="sendContactForm()">Envoyer le message →</button>
+    <button class="contact-submit-btn" onclick="sendContactForm()" data-i18n="btn_send_message">Envoyer le message →</button>
   </div>
 </div>
 </section>
@@ -343,7 +350,7 @@
     <div class="footer-top">
       <div class="footer-brand">
         <div class="footer-logo">Sol<span>tex</span></div>
-        <p class="footer-about">Votre spécialiste de l'énergie solaire à Madagascar. Matériel certifié, prix compétitifs, livraison partout dans l'île.</p>
+        <p class="footer-about" data-i18n="footer_about">Votre spécialiste de l'énergie solaire à Madagascar. Matériel certifié, prix compétitifs, livraison partout dans l'île.</p>
         <div class="footer-social">
           <a href="https://facebook.com" target="_blank" rel="noopener" class="social-btn">f</a>
           <a href="https://instagram.com" target="_blank" rel="noopener" class="social-btn">📷</a>
@@ -352,25 +359,25 @@
         </div>
       </div>
       <div>
-        <div class="footer-col-title">Navigation</div>
+        <div class="footer-col-title" data-i18n="footer_nav_title">Navigation</div>
         <ul class="footer-links">
-          <li><a onclick="scrollToSection('hero')">Accueil</a></li>
-          <li><a onclick="scrollToSection('produits')">Produits</a></li>
-          <li><a onclick="scrollToSection('contact')">Contact</a></li>
+          <li><a onclick="scrollToSection('hero')" data-i18n="nav_home">Accueil</a></li>
+          <li><a onclick="scrollToSection('produits')" data-i18n="nav_products">Produits</a></li>
+          <li><a onclick="scrollToSection('contact')" data-i18n="nav_contact">Contact</a></li>
         </ul>
       </div>
       <div>
-        <div class="footer-col-title">Catégories</div>
+        <div class="footer-col-title" data-i18n="footer_cat_title">Catégories</div>
         <ul class="footer-links">
-          <li><a onclick="filterCat('PANNEAUX');scrollToSection('produits')">Panneaux solaires</a></li>
-          <li><a onclick="filterCat('BATTERIES');scrollToSection('produits')">Batteries</a></li>
-          <li><a onclick="filterCat('ONDULEURS');scrollToSection('produits')">Onduleurs</a></li>
-          <li><a onclick="filterCat('ACCESSOIRES');scrollToSection('produits')">Accessoires</a></li>
-          <li><a onclick="filterCat('KITS');scrollToSection('produits')">Pack Complet</a></li>
+          <li><a onclick="filterCat('PANNEAUX');scrollToSection('produits')" data-i18n="footer_cat_panels">Panneaux solaires</a></li>
+          <li><a onclick="filterCat('BATTERIES');scrollToSection('produits')" data-i18n="cat_batteries_plain">Batteries</a></li>
+          <li><a onclick="filterCat('ONDULEURS');scrollToSection('produits')" data-i18n="cat_inverters_plain">Onduleurs</a></li>
+          <li><a onclick="filterCat('ACCESSOIRES');scrollToSection('produits')" data-i18n="nav_accessories">Accessoires</a></li>
+          <li><a onclick="filterCat('KITS');scrollToSection('produits')" data-i18n="cat_kits_plain">Pack Complet</a></li>
         </ul>
       </div>
       <div>
-        <div class="footer-col-title">Contact</div>
+        <div class="footer-col-title" data-i18n="nav_contact">Contact</div>
         <div class="footer-contact-item">
           <span class="footer-contact-icon">📞</span>
           <div class="footer-contact-text">+261 34 37 058 34<br>+261 33 14 505 08</div>
@@ -381,15 +388,15 @@
         </div>
         <div class="footer-contact-item">
           <span class="footer-contact-icon">📍</span>
-          <div class="footer-contact-text">Antananarivo, Madagascar<br>Ouvert Lu–Sa 8AM–06PM</div>
+          <div class="footer-contact-text" data-i18n="footer_address">Antananarivo, Madagascar<br>Ouvert Lu–Sa 8AM–06PM</div>
         </div>
       </div>
     </div>
     <hr class="footer-divider"/>
     <div class="footer-bottom">
-      <div class="footer-copy">© 2026 <strong>Soltex</strong> — Tous droits réservés</div>
+      <div class="footer-copy">© 2026 <strong>Soltex</strong> — <span data-i18n="footer_rights">Tous droits réservés</span></div>
       <div class="footer-pay">
-        <span style="font-size:.75rem;color:#475569;margin-right:.3rem">Paiements :</span>
+        <span style="font-size:.75rem;color:#475569;margin-right:.3rem" data-i18n="footer_payments">Paiements :</span>
         <span class="pay-chip">📱 MVola</span>
         <span class="pay-chip">🟠 Orange</span>
         <span class="pay-chip">🔴 Airtel</span>
@@ -417,33 +424,33 @@
     <div class="modal-thumbs" id="mThumbs"></div>
     <div class="modal-body">
       <div>
-        <div class="specs-section-title">📋 Caractéristiques</div>
+        <div class="specs-section-title" data-i18n="modal_specs_title">📋 Caractéristiques</div>
         <div class="specs-grid-2" id="mSpecs"></div>
-        <div class="specs-section-title">✅ Avantages</div>
+        <div class="specs-section-title" data-i18n="modal_advantages_title">✅ Avantages</div>
         <ul class="features-ul" id="mFeatures"></ul>
       </div>
       <div>
-        <div class="modal-stock"><div class="stock-dot"></div> En stock</div>
+        <div class="modal-stock"><div class="stock-dot"></div> <span data-i18n="modal_in_stock">En stock</span></div>
         <div class="modal-price-block">
           <span class="modal-price-now" id="mPrice">0 ARIARY</span>
           <span class="modal-price-old" id="mOld"></span>
           <span class="modal-disc" id="mDisc" style="display:none"></span>
         </div>
         <div class="modal-qty-row">
-          <span style="font-size:.85rem;font-weight:600;color:var(--g600)">Quantité :</span>
+          <span style="font-size:.85rem;font-weight:600;color:var(--g600)" data-i18n="modal_quantity">Quantité :</span>
           <div class="qty-wrap">
             <button class="qty-btn" onclick="changeQty(-1)">−</button>
             <div class="qty-val" id="qtyVal">1</div>
             <button class="qty-btn" onclick="changeQty(1)">+</button>
           </div>
         </div>
-        <button class="modal-add-btn" onclick="addFromModal()">🛒 Ajouter au panier</button>
-        <button class="modal-wish-btn" onclick="addToWishlist()">♡ Ajouter aux favoris</button>
+        <button class="modal-add-btn" onclick="addFromModal()" data-i18n="btn_add_to_cart">🛒 Ajouter au panier</button>
+        <button class="modal-wish-btn" onclick="addToWishlist()" data-i18n="btn_add_to_wishlist">♡ Ajouter aux favoris</button>
         <div class="modal-perks">
-          <div class="perk"><span class="perk-icon">🚚</span> Livraison gratuite dès 860 000 Ar</div>
-          <div class="perk"><span class="perk-icon">🔄</span> Retour sous 30 jours</div>
-          <div class="perk"><span class="perk-icon">🛡️</span> Garantie fabricant incluse</div>
-          <div class="perk"><span class="perk-icon">📱</span> Paiement mobile money accepté</div>
+          <div class="perk"><span class="perk-icon">🚚</span> <span data-i18n="perk_free_ship">Livraison gratuite dès 860 000 Ar</span></div>
+          <div class="perk"><span class="perk-icon">🔄</span> <span data-i18n="perk_return">Retour sous 30 jours</span></div>
+          <div class="perk"><span class="perk-icon">🛡️</span> <span data-i18n="perk_warranty">Garantie fabricant incluse</span></div>
+          <div class="perk"><span class="perk-icon">📱</span> <span data-i18n="perk_mobile_pay">Paiement mobile money accepté</span></div>
         </div>
       </div>
     </div>
@@ -455,7 +462,7 @@
   <div class="cart-drawer">
     <div class="cart-head">
       <div>
-        <div class="cart-head-title">🛒 Mon Panier</div>
+        <div class="cart-head-title">🛒 <span data-i18n="cart_title">Mon Panier</span></div>
         <div class="cart-head-sub" id="cartSub">0 article</div>
       </div>
       <button class="cart-x" onclick="toggleCart()">✕</button>
@@ -463,16 +470,16 @@
     <div class="cart-body" id="cartBody">
       <div class="cart-empty-state" id="cartEmpty">
         <div style="font-size:3rem;margin-bottom:1rem">🛒</div>
-        <div style="font-weight:700;color:var(--g800);margin-bottom:.4rem">Panier vide</div>
-        <div style="font-size:.83rem;color:var(--g400)">Ajoutez des produits pour commencer</div>
+        <div style="font-weight:700;color:var(--g800);margin-bottom:.4rem" data-i18n="cart_empty_title">Panier vide</div>
+        <div style="font-size:.83rem;color:var(--g400)" data-i18n="cart_empty_sub">Ajoutez des produits pour commencer</div>
       </div>
     </div>
     <div class="cart-foot" id="cartFoot" style="display:none">
-      <div class="cart-total-line"><span>Sous-total</span><span id="cartSubtotal">0 Ar</span></div>
-      <div class="cart-total-line" style="font-size:.8rem;color:var(--g400)"><span>Livraison</span><span id="cartShip">64 500 Ar</span></div>
-      <div class="cart-grand-line"><span>Total</span><span id="cartTotal">0 Ar</span></div>
-      <button class="cart-checkout-btn" onclick="openCheckout()">Passer la commande →</button>
-      <button class="cart-continue-btn" onclick="toggleCart()">Continuer mes achats</button>
+      <div class="cart-total-line"><span data-i18n="cart_subtotal">Sous-total</span><span id="cartSubtotal">0 Ar</span></div>
+      <div class="cart-total-line" style="font-size:.8rem;color:var(--g400)"><span data-i18n="cart_shipping">Livraison</span><span id="cartShip">64 500 Ar</span></div>
+      <div class="cart-grand-line"><span data-i18n="cart_total">Total</span><span id="cartTotal">0 Ar</span></div>
+      <button class="cart-checkout-btn" onclick="openCheckout()" data-i18n="btn_checkout">Passer la commande →</button>
+      <button class="cart-continue-btn" onclick="toggleCart()" data-i18n="btn_continue_shopping">Continuer mes achats</button>
     </div>
   </div>
 </div>
@@ -482,7 +489,7 @@
   <div class="fav-drawer">
     <div class="fav-head">
       <div>
-        <div class="fav-head-title">♡ Mes Favoris</div>
+        <div class="fav-head-title">♡ <span data-i18n="fav_title">Mes Favoris</span></div>
         <div class="fav-head-sub" id="favSub">0 article</div>
       </div>
       <button class="fav-x" onclick="toggleFav()">✕</button>
@@ -490,13 +497,13 @@
     <div class="fav-body" id="favBody">
       <div class="fav-empty" id="favEmpty">
         <div style="font-size:3rem;margin-bottom:1rem">♡</div>
-        <div style="font-weight:700;color:var(--g800);margin-bottom:.4rem">Aucun favori</div>
-        <div style="font-size:.83rem;color:var(--g400)">Cliquez sur ♡ pour ajouter un produit</div>
+        <div style="font-weight:700;color:var(--g800);margin-bottom:.4rem" data-i18n="fav_empty_title">Aucun favori</div>
+        <div style="font-size:.83rem;color:var(--g400)" data-i18n="fav_empty_sub">Cliquez sur ♡ pour ajouter un produit</div>
       </div>
     </div>
     <div class="fav-foot" id="favFoot" style="display:none">
-      <button class="fav-add-all" onclick="addAllToCart()">🛒 Tout ajouter au panier</button>
-      <button class="fav-clear" onclick="clearFavoris()">🗑 Vider les favoris</button>
+      <button class="fav-add-all" onclick="addAllToCart()" data-i18n="btn_add_all_cart">🛒 Tout ajouter au panier</button>
+      <button class="fav-clear" onclick="clearFavoris()" data-i18n="btn_clear_fav">🗑 Vider les favoris</button>
     </div>
   </div>
 </div>
@@ -506,61 +513,61 @@
   <div class="co-modal">
     <!-- Steps -->
     <div class="co-steps">
-      <div class="co-step active" id="cs1"><div class="co-step-circle" id="cc1">1</div><span class="co-step-label">Livraison</span></div>
+      <div class="co-step active" id="cs1"><div class="co-step-circle" id="cc1">1</div><span class="co-step-label" data-i18n="step_delivery">Livraison</span></div>
       <div class="co-step-line" id="cl1"></div>
-      <div class="co-step" id="cs2"><div class="co-step-circle" id="cc2">2</div><span class="co-step-label">Paiement</span></div>
+      <div class="co-step" id="cs2"><div class="co-step-circle" id="cc2">2</div><span class="co-step-label" data-i18n="step_payment">Paiement</span></div>
       <div class="co-step-line" id="cl2"></div>
-      <div class="co-step" id="cs3"><div class="co-step-circle" id="cc3">3</div><span class="co-step-label">Confirmation</span></div>
+      <div class="co-step" id="cs3"><div class="co-step-circle" id="cc3">3</div><span class="co-step-label" data-i18n="step_confirmation">Confirmation</span></div>
     </div>
 
     <!-- Step 1: Livraison -->
     <div class="co-body" id="coStep1">
-      <div class="co-title">📦 Adresse de livraison</div>
+      <div class="co-title" data-i18n="co1_title">📦 Adresse de livraison</div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Prénom</label><input class="form-input" id="fPrenom" placeholder="Jean"/></div>
-        <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="fNom" placeholder="Rakoto"/></div>
+        <div class="form-group"><label class="form-label" data-i18n="label_firstname">Prénom</label><input class="form-input" id="fPrenom" placeholder="Jean"/></div>
+        <div class="form-group"><label class="form-label" data-i18n="label_lastname">Nom</label><input class="form-input" id="fNom" placeholder="Rakoto"/></div>
       </div>
       <div class="form-row form-full">
-        <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" id="fTel" placeholder="+261 34 00 000 00"/></div>
+        <div class="form-group"><label class="form-label" data-i18n="label_phone">Téléphone</label><input class="form-input" id="fTel" placeholder="+261 34 00 000 00"/></div>
       </div>
       <div class="form-row form-full">
-        <div class="form-group"><label class="form-label">Adresse complète</label><input class="form-input" id="fAdresse" placeholder="Lot, rue, quartier..."/></div>
+        <div class="form-group"><label class="form-label" data-i18n="label_address">Adresse complète</label><input class="form-input" id="fAdresse" placeholder="Lot, rue, quartier..." data-i18n-placeholder="ph_address"/></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Ville</label>
+        <div class="form-group"><label class="form-label" data-i18n="label_city">Ville</label>
           <select class="form-select" id="fVille">
-            <option value="">Choisir...</option>
+            <option value="" data-i18n="opt_choose">Choisir...</option>
             <option>Antananarivo</option><option>Toamasina</option>
             <option>Fianarantsoa</option><option>Mahajanga</option>
-            <option>Toliara</option><option>Antsiranana</option><option>Autre</option>
+            <option>Toliara</option><option>Antsiranana</option><option data-i18n="opt_other">Autre</option>
           </select>
         </div>
-        <div class="form-group"><label class="form-label">Code postal</label><input class="form-input" id="fCp" placeholder="101"/></div>
+        <div class="form-group"><label class="form-label" data-i18n="label_zipcode">Code postal</label><input class="form-input" id="fCp" placeholder="101"/></div>
       </div>
       <div class="co-nav">
-        <button class="co-back" onclick="closeCheckout()">✕ Annuler</button>
-        <button class="co-next" onclick="goStep(2)">Continuer → Paiement</button>
+        <button class="co-back" onclick="closeCheckout()" data-i18n="btn_cancel">✕ Annuler</button>
+        <button class="co-next" onclick="goStep(2)" data-i18n="btn_continue_payment">Continuer → Paiement</button>
       </div>
     </div>
 
     <!-- Step 2: Paiement -->
     <div class="co-body" id="coStep2" style="display:none">
-      <div class="co-title">💳 Mode de paiement</div>
+      <div class="co-title" data-i18n="co2_title">💳 Mode de paiement</div>
       <div class="pay-grid">
-        <div class="pay-opt sel" id="po_mvola" onclick="selPay('mvola')"><div class="pay-opt-icon">📱</div><div class="pay-opt-name">MVola</div><div class="pay-opt-sub">Telma</div></div>
-        <div class="pay-opt" id="po_orange" onclick="selPay('orange')"><div class="pay-opt-icon">🟠</div><div class="pay-opt-name">Orange Money</div><div class="pay-opt-sub">Orange</div></div>
-        <div class="pay-opt" id="po_airtel" onclick="selPay('airtel')"><div class="pay-opt-icon">🔴</div><div class="pay-opt-name">Airtel Money</div><div class="pay-opt-sub">Airtel</div></div>
-        <div class="pay-opt" id="po_cash" onclick="selPay('cash')"><div class="pay-opt-icon">💵</div><div class="pay-opt-name">Espèces</div><div class="pay-opt-sub">À la livraison</div></div>
+        <div class="pay-opt sel" id="po_mvola" onclick="selPay('mvola')"><div class="pay-opt-icon">📱</div><div class="pay-opt-name">MVola</div><div class="pay-opt-sub" data-i18n="pay_telma">Telma</div></div>
+        <div class="pay-opt" id="po_orange" onclick="selPay('orange')"><div class="pay-opt-icon">🟠</div><div class="pay-opt-name">Orange Money</div><div class="pay-opt-sub" data-i18n="pay_orange">Orange</div></div>
+        <div class="pay-opt" id="po_airtel" onclick="selPay('airtel')"><div class="pay-opt-icon">🔴</div><div class="pay-opt-name">Airtel Money</div><div class="pay-opt-sub" data-i18n="pay_airtel">Airtel</div></div>
+        <div class="pay-opt" id="po_cash" onclick="selPay('cash')"><div class="pay-opt-icon">💵</div><div class="pay-opt-name" data-i18n="pay_cash">Espèces</div><div class="pay-opt-sub" data-i18n="pay_on_delivery">À la livraison</div></div>
       </div>
       <div id="payInputZone" style="margin-bottom:1rem"></div>
       <div class="co-summary">
-        <div class="co-summary-title">Récapitulatif</div>
+        <div class="co-summary-title" data-i18n="co_summary">Récapitulatif</div>
         <div id="coSumItems"></div>
-        <div class="co-sum-total"><span>Total à payer</span><span id="coSumTotal">0 Ar</span></div>
+        <div class="co-sum-total"><span data-i18n="co_total_due">Total à payer</span><span id="coSumTotal">0 Ar</span></div>
       </div>
       <div class="co-nav">
-        <button class="co-back" onclick="goStep(1)">← Retour</button>
-        <button class="co-confirm" onclick="confirmOrder()">✅ Confirmer la commande</button>
+        <button class="co-back" onclick="goStep(1)" data-i18n="btn_back">← Retour</button>
+        <button class="co-confirm" onclick="confirmOrder()" data-i18n="btn_confirm_order">✅ Confirmer la commande</button>
       </div>
     </div>
 
@@ -568,25 +575,25 @@
     <div class="co-body" id="coStep3" style="display:none">
       <div class="co-success">
         <div class="co-success-icon">🎉</div>
-        <h2>Commande confirmée !</h2>
-        <p>Merci pour votre commande. Notre équipe vous contactera dans les <strong>2 heures</strong> pour confirmer la livraison.</p>
-        <div class="co-ref"><div class="co-ref-label">Numéro de commande</div><div class="co-ref-num" id="coRef">#SM-000000</div></div>
+        <h2 data-i18n="co3_title">Commande confirmée !</h2>
+        <p data-i18n="co3_desc">Merci pour votre commande. Notre équipe vous contactera dans les <strong>2 heures</strong> pour confirmer la livraison.</p>
+        <div class="co-ref"><div class="co-ref-label" data-i18n="co_ref_label">Numéro de commande</div><div class="co-ref-num" id="coRef">#SM-000000</div></div>
         <div style="background:var(--g50);border-radius:12px;padding:1rem;margin-bottom:1rem;text-align:left">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g400);margin-bottom:.5rem">📦 Livraison</div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g400);margin-bottom:.5rem" data-i18n="co_conf_delivery">📦 Livraison</div>
           <div id="coConfLiv" style="font-size:.84rem;color:var(--g600);line-height:1.7"></div>
         </div>
         <div style="background:var(--g50);border-radius:12px;padding:1rem;margin-bottom:1rem;text-align:left">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g400);margin-bottom:.5rem">💳 Paiement</div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g400);margin-bottom:.5rem" data-i18n="co_conf_payment">💳 Paiement</div>
           <div id="coConfPay" style="font-size:.84rem;color:var(--g600);line-height:1.7"></div>
         </div>
         <div style="background:var(--g50);border-radius:12px;padding:1rem;margin-bottom:1rem;text-align:left">
-          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g400);margin-bottom:.5rem">🛒 Articles</div>
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g400);margin-bottom:.5rem" data-i18n="co_conf_items">🛒 Articles</div>
           <div id="coConfItems" style="font-size:.84rem;color:var(--g600)"></div>
           <div id="coConfTotal" style="font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:800;color:var(--blue2);border-top:1px solid var(--g200);margin-top:.5rem;padding-top:.5rem"></div>
         </div>
-        <div class="co-info-box">🚚 Livraison estimée : 24–48h &nbsp;|&nbsp; Conservez votre numéro de commande</div>
-        <button class="co-next" style="margin-bottom:.6rem" onclick="generateInvoice()">🖨️ Télécharger la facture</button>
-        <button class="co-next" style="background:var(--g100);color:var(--g800);border:1.5px solid var(--g200)" onclick="finishCheckout()">🏠 Retour à la boutique</button>
+        <div class="co-info-box" data-i18n="co_info_box">🚚 Livraison estimée : 24–48h &nbsp;|&nbsp; Conservez votre numéro de commande</div>
+        <button class="co-next" style="margin-bottom:.6rem" onclick="generateInvoice()" data-i18n="btn_download_invoice">🖨️ Télécharger la facture</button>
+        <button class="co-next" style="background:var(--g100);color:var(--g800);border:1.5px solid var(--g200)" onclick="finishCheckout()" data-i18n="btn_back_shop">🏠 Retour à la boutique</button>
       </div>
     </div>
   </div>
@@ -602,8 +609,8 @@
       </video>
     </div>
     <div class="video-caption">
-      <div class="video-caption-title">⚡ L'énergie solaire avec Soltex</div>
-      <div class="video-caption-sub">Découvrez comment nous accompagnons les familles et entreprises de Madagascar vers l'indépendance énergétique</div>
+      <div class="video-caption-title" data-i18n="video_title">⚡ L'énergie solaire avec Soltex</div>
+      <div class="video-caption-sub" data-i18n="video_sub">Découvrez comment nous accompagnons les familles et entreprises de Madagascar vers l'indépendance énergétique</div>
     </div>
   </div>
 </div>
