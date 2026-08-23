@@ -1150,17 +1150,25 @@ footer{background:var(--navy);color:#fff;padding:4rem 2rem 2rem}
 }
 
 /* ══════════════════════════════
-   FIFIDIANANA FITENY (FR/EN)
+   FIFIDIANANA FITENY (FR/EN) — toggle
 ══════════════════════════════ */
-.lang-switch{
-  display:flex;background:var(--g100);border-radius:999px;padding:3px;gap:2px;
+.lang-toggle{
+  position:relative;display:flex;align-items:center;justify-content:space-between;
+  width:64px;height:30px;border-radius:999px;border:none;cursor:pointer;
+  background:var(--g100);padding:0 8px;transition:.2s;
 }
-.lang-btn{
-  border:none;background:transparent;padding:.4rem .7rem;border-radius:999px;
-  font-size:.75rem;font-weight:700;color:var(--g600);cursor:pointer;transition:.2s;
+.lang-toggle-label{
+  font-size:.68rem;font-weight:800;color:var(--g400);z-index:1;transition:.2s;
+  letter-spacing:.02em;
 }
-.lang-btn.active{background:var(--navy);color:var(--white)}
-.lang-btn:not(.active):hover{color:var(--navy)}
+.lang-toggle:not(.is-en) .lang-toggle-fr{color:var(--navy)}
+.lang-toggle.is-en .lang-toggle-en{color:var(--navy)}
+.lang-toggle-knob{
+  position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
+  background:var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.25);
+  transition:transform .25s ease;
+}
+.lang-toggle.is-en .lang-toggle-knob{transform:translateX(34px)}
 @media(max-width:900px){
-  .lang-switch{order:3}
+  .lang-toggle{order:3}
 }

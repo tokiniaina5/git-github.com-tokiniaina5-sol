@@ -2318,13 +2318,16 @@ function t(key){
   return (I18N[currentLang] && I18N[currentLang][key]) || (I18N.fr[key]) || key;
 }
 
+function toggleLanguage(){
+  switchLanguage(currentLang==='fr' ? 'en' : 'fr');
+}
+
 function switchLanguage(lang){
   currentLang = lang;
   localStorage.setItem('soltex_lang', lang);
   document.documentElement.lang = lang;
-  document.querySelectorAll('[data-lang-btn]').forEach(b=>{
-    b.classList.toggle('active', b.getAttribute('data-lang-btn')===lang);
-  });
+  const toggle = document.getElementById('langToggle');
+  if(toggle) toggle.classList.toggle('is-en', lang==='en');
   document.querySelectorAll('[data-i18n]').forEach(el=>{
     const key = el.getAttribute('data-i18n');
     el.innerHTML = t(key);

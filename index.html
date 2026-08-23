@@ -52,10 +52,11 @@
     <button class="hamburger" onclick="toggleMenu()" id="hamburger">
       <span></span><span></span><span></span>
     </button>
-    <div class="lang-switch" id="langSwitch">
-      <button class="lang-btn active" onclick="switchLanguage('fr')" data-lang-btn="fr">FR</button>
-      <button class="lang-btn" onclick="switchLanguage('en')" data-lang-btn="en">EN</button>
-    </div>
+    <button class="lang-toggle" id="langToggle" onclick="toggleLanguage()">
+      <span class="lang-toggle-label lang-toggle-fr">FR</span>
+      <span class="lang-toggle-knob"></span>
+      <span class="lang-toggle-label lang-toggle-en">EN</span>
+    </button>
   </div>
 </nav>
 
